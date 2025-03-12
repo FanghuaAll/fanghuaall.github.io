@@ -303,7 +303,7 @@ function clearCartFromLocalStorage() {
 
 document.addEventListener('DOMContentLoaded', function() {
   loadCartFromLocalStorage();
-  fetch('https://gh.llkk.cc/https://raw.githubusercontent.com/FanghuaAll/file/main/data.json') // 替换为实际的JSON数据URL
+  fetch('./data.json') // 替换为实际的JSON数据URL
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
