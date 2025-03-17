@@ -2,6 +2,26 @@
   "baseImageURL": "./img/",
   "products": [
   {
+    "category": "短袖",
+    "image": "巴黎爱心短袖.jpg",
+    "sizes": ["XS", "S", "M"]
+  },
+  {
+    "category": "短袖",
+    "image": "罗意威小兔子短袖.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短袖",
+    "image": "BBR绿战马短袖.jpg",
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "罗意威双拼色小logo短袖.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
     "category": "外套",
     "image": "TB休闲西装外套.jpg",
     "sizes": ["1", "2", "3", "4"]
