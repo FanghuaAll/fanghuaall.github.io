@@ -3,6 +3,31 @@
   "products": [
   {
     "category": "短袖",
+    "image": "巴黎徽标短袖.jpg",
+    "sizes": ["1码", "2码", "3码"]
+  },
+  {
+    "category": "短袖",
+    "image": "巴黎人像短袖.jpg",
+    "sizes": ["1码", "2码", "3码"]
+  },
+  {
+    "category": "短袖",
+    "image": "LV1931针织短袖.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短袖",
+    "image": "BBR植绒字母短袖.jpg",
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "罗意威口袋刺绣短袖绿.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短袖",
     "image": "巴黎爱心短袖.jpg",
     "sizes": ["XS", "S", "M"]
   },
@@ -24,7 +49,7 @@
   {
     "category": "外套",
     "image": "TB休闲西装外套.jpg",
-    "sizes": ["1", "2", "3", "4"]
+    "sizes": ["1码", "2码", "3码", "4码"]
   },
   {
     "category": "长袖",
@@ -39,7 +64,7 @@
   {
     "category": "帽衫",
     "image": "巴黎夏威夷帽衫.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "外套",
