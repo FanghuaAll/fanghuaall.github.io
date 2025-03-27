@@ -3,6 +3,11 @@
   "products": [
   {
     "category": "短袖",
+    "image": "BBR双战马短袖.jpg",
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "category": "短袖",
     "image": "巴黎徽标短袖.jpg",
     "sizes": ["1码", "2码", "3码"]
   },
