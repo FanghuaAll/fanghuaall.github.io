@@ -3,6 +3,11 @@
   "products": [
   {
     "category": "短袖",
+    "image": "亚历山大模糊字体短袖.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
     "image": "BBR双战马短袖.jpg",
     "sizes": ["XS", "S", "M", "L"]
   },
