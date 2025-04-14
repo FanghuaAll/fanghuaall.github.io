@@ -3,6 +3,16 @@
   "products": [
   {
     "category": "短袖",
+    "image": "BV口袋格纹短袖黑.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "BV口袋格纹短袖白.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
     "image": "亚历山大模糊字体短袖.jpg",
     "sizes": ["S", "M", "L"]
   },
