@@ -2,6 +2,56 @@
   "baseImageURL": "./img/",
   "products": [
   {
+    "category": "短裤",
+    "image": "杰尼亚休闲短裤 复古绿.jpg",
+    "sizes": ["48", "50", "52", "54"]
+  },
+  {
+    "category": "短袖",
+    "image": "JIL爱心短袖.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "BBR格纹战马标短袖白.jpg",
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "BBR格纹战马标短袖黑.jpg",
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "LV立体浮雕短袖白.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短袖",
+    "image": "LV立体浮雕短袖黑.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短裤",
+    "image": "FOG联名AD短裤.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短袖",
+    "image": "LV地球标短袖 咖色.jpg",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "category": "短袖",
+    "image": "巴黎背后黑浮雕印花短袖.jpg",
+    "sizes": ["1码", "2码", "3码"]
+  },
+  {
+    "category": "短袖",
+    "image": "巴黎小IB字母速干短袖.jpg",
+    "sizes": ["XS", "S", "M"]
+  },
+  {
     "category": "短袖",
     "image": "BV口袋格纹短袖黑.jpg",
     "sizes": ["S", "M", "L"]
@@ -199,7 +249,7 @@
   {
     "category": "帽衫",
     "image": "巴黎铁塔帽衫.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "毛衣",
@@ -274,7 +324,7 @@
   {
     "category": "帽衫",
     "image": "巴黎自由女神帽衫.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "毛衣",
@@ -339,7 +389,7 @@
   {
     "category": "帽衫",
     "image": "巴黎IB反光帽衫.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "外套",
@@ -429,7 +479,7 @@
   {
     "category": "帽衫",
     "image": "巴黎三叶草帽衫绿.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "外套",
@@ -544,7 +594,7 @@
   {
     "category": "短袖",
     "image": "巴黎安德玛短袖.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
@@ -554,7 +604,7 @@
   {
     "category": "短袖",
     "image": "巴黎铁塔短袖.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
    {
     "category": "短袖",
@@ -754,7 +804,7 @@
   {
     "category": "短袖",
     "image": "巴黎多LOGO短袖.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
@@ -774,7 +824,7 @@
   {
     "category": "短袖",
     "image": "巴黎乐谱短袖.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
@@ -784,22 +834,22 @@
   {
     "category": "短袖",
     "image": "巴黎三叶草短袖白.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
     "image": "巴黎三叶草短袖复古绿.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
     "image": "巴黎三叶草短袖黑.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
     "image": "巴黎三叶草短袖蓝.jpg",
-    "sizes": ["1", "2", "3"]
+    "sizes": ["1码", "2码", "3码"]
   },
   {
     "category": "短袖",
