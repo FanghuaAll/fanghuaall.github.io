@@ -2,6 +2,31 @@
   "baseImageURL": "./img/",
   "products": [
   {
+    "category": "短袖",
+    "image": "BV火柴棍短袖黑色.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "BV火柴棍短袖白色.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "AMI 明线短袖.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "BBR肩部织带格子短袖.jpg",
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "category": "短裤",
+    "image": "LV羊毛休闲短裤黑色.jpg",
+    "sizes": ["46", "48", "50", "52"]
+  },
+  {
     "category": "短裤",
     "image": "杰尼亚休闲短裤 复古绿.jpg",
     "sizes": ["48", "50", "52", "54"]
