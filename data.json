@@ -18,6 +18,16 @@
   },
   {
     "category": "短袖",
+    "image": "马吉拉模糊方框短袖杏色.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
+    "image": "马吉拉模糊方框短袖黑.jpg",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "category": "短袖",
     "image": "BBR肩部织带格子短袖.jpg",
     "sizes": ["XS", "S", "M", "L"]
   },
