@@ -531,7 +531,7 @@
         }
 
         function copyCart() {
-            const text = cart.map(item => `▫️ ${item.name} - ${item.size}`).join('\n');
+            const text = cart.map(item => `${item.name} - ${item.size}`).join('\n');
             navigator.clipboard.writeText(text).then(() => {
                 showMessage('📋 已复制到剪贴板');
             });
