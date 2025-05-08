@@ -13,7 +13,7 @@
             padding: 20px; 
             background: #f0f2f5;
         }
-		
+        
     /* 在header样式下方添加标题字体样式 */
     header h1 {
         font-family: 'SF Pro Display', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
@@ -345,7 +345,7 @@
 <body>
     <header>
         <h1>🛒 柯南报货</h1>
-        <input type="text" id="searchInput" placeholder="🔍 搜索商品...">
+        <input type="text" id="searchInput" placeholder="🔍 搜索...">
     </header>
 
     <div class="product-grid" id="productGrid"></div>
@@ -367,22 +367,18 @@
 
     <script>
         let sampleImages = [];
-        
-        async function fetchProducts() {
+
+        async function loadProducts() {
             try {
-                const response = await fetch('https://docs.qq.com/doc/DQkR2cmhoemZoT0hq'); // 替换为实际URL
+                const response = await fetch('products.txt');
                 const text = await response.text();
-                // 匹配两个#之间的多行内容（支持任意空白）
-                const blockMatch = text.match((?<=#)([\s\S]*?)(?=#));
-                if (blockMatch) {
-                    sampleImages = blockMatch[1]
-                        .split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line && line.length > 0);
-                }
+                return text.split('\n')
+                          .map(line => line.trim())
+                          .filter(line => line.length > 0);
             } catch (error) {
-                console.error('获取商品数据失败:', error);
-                showMessage('❌ 数据加载失败');
+                console.error('加载商品数据失败:', error);
+                showMessage('❌ 无法加载商品数据');
+                return [];
             }
         }
 
@@ -558,16 +554,20 @@
             filterProducts('all');
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        async function initApp() {
+            sampleImages = await loadProducts();
+            renderProducts();
+            createFilterButtons();
+            initFilterButtons();
+            updateCart();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
             searchInput.addEventListener('input', handleSearch);
             searchInput.addEventListener('focus', handleSearch);
             
-            await fetchProducts();
-            createFilterButtons();
-            initFilterButtons();
-            renderProducts();
-            updateCart();
+            initApp();
         });
     </script>
 </body>
