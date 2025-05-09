@@ -426,25 +426,28 @@
         }
 
         function renderProducts() {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = sampleImages.map(fileName => {
-                const product = parseFileName(fileName);
-                return `
-                    <div class="product-card" data-type="${product.type}">
-                        <img class="product-image" src="${product.image}" alt="${product.name}">
-                        <h3>${product.name}</h3>
-                        <div class="size-buttons">
-                            ${product.sizes.map(size => `
-                                <button class="size-btn" 
-                                    onclick="addToCart('${product.name}', '${size}', '${product.image}', event)">
-                                    ${size}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = sampleImages.map(fileName => {
+        const product = parseFileName(fileName);
+        return `
+            <div class="product-card" data-type="${product.type}">
+                <img class="product-image" 
+                     src="${product.image}" 
+                     alt="${product.name}"
+                     onerror="this.onerror=null;this.src='sosad.jpg';">
+                <h3>${product.name}</h3>
+                <div class="size-buttons">
+                    ${product.sizes.map(size => `
+                        <button class="size-btn" 
+                            onclick="addToCart('${product.name}', '${size}', '${product.image}', event)">
+                            ${size}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
