@@ -25,6 +25,7 @@
         padding: 8px 0;
         margin: 0;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
     }
 
     header h1::after {
@@ -69,7 +70,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
             height: 70px;
         }
 
@@ -340,11 +341,117 @@
             background: rgba(255,255,255,0.8);
             backdrop-filter: blur(4px);
         }
+        #dataSource {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            margin-left: 20px;
+        }
+
+        /* 按钮状态样式 */
+        .size-btn.soon {
+            background: #ffa500 !important;
+            color: white !important;
+        }
+        
+        .size-btn.sold-out {
+            background: #ff4444 !important;
+            color: white !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* 数据源切换样式 */
+        .data-source-menu {
+            position: relative;
+        }
+
+        .data-source-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 8px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            min-width: 160px;
+            z-index: 1001;
+            right: 0;
+            left: auto;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(90deg); }
+        }
+
+        .data-source-options.show {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .data-source-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        .data-source-option:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .data-source-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 8px;
+            margin-top: 7px;
+        }
+
+        .data-source-btn:hover {
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transform: rotate(90deg);
+        }
+
+        .data-source-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #2c3e50;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>🛒 柯南</h1>
+        <h1 id="mainTitle">📦 柯南</h1>
+        <div class="data-source-menu">
+            <button class="data-source-btn" onclick="toggleDataSourceMenu()" aria-label="切换数据源">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zM16 4v3.5l-4 4-4-4V4h8z"/>
+                </svg>
+            </button>
+            <div class="data-source-options" id="dataSourceOptions"></div>
+        </div>
         <input type="text" id="searchInput" placeholder="🔍 搜索...">
     </header>
 
@@ -386,8 +493,8 @@
             const [name, type, sizes] = fileName.split('_');
             return { 
                 name, 
-                type, 
-                sizes: sizes.split('.'), 
+                type,
+                sizes: sizes.split('.').map(s => s.replace(/-.*/, '')), // 移除尺寸后缀
                 image: 'img/' + name + '.jpg'
             };
         }
@@ -426,28 +533,42 @@
         }
 
         function renderProducts() {
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = sampleImages.map(fileName => {
-        const product = parseFileName(fileName);
-        return `
-            <div class="product-card" data-type="${product.type}">
-                <img class="product-image" 
-                     src="${product.image}" 
-                     alt="${product.name}"
-                     onerror="this.onerror=null;this.src='sosad.jpg';">
-                <h3>${product.name}</h3>
-                <div class="size-buttons">
-                    ${product.sizes.map(size => `
-                        <button class="size-btn" 
-                            onclick="addToCart('${product.name}', '${size}', '${product.image}', event)">
-                            ${size}
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = sampleImages.map(fileName => {
+                const product = parseFileName(fileName);
+                return `
+                    <div class="product-card" data-type="${product.type}">
+                        <img class="product-image" 
+                             src="${product.image}" 
+                             alt="${product.name}"
+                             onerror="this.onerror=null;this.src='sosad.jpg';">
+                        <h3>${product.name}</h3>
+                        <div class="size-buttons">
+                            ${product.sizes.map(size => {
+                                const status = getSizeStatus(size);
+                                return `
+                                    <button class="size-btn ${status.class}" 
+                                        ${status.disabled ? 'disabled' : ''}
+                                        ${status.disabled ? '' : `onclick="addToCart('${product.name}', '${size}', '${product.image}', event)"`}>
+                                        ${size.replace(/-(即将上架|下架)/, '')}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getSizeStatus(size) {
+            if (size.includes('即将上架')) {
+                return { class: 'soon', disabled: true };
+            }
+            if (size.includes('下架')) {
+                return { class: 'sold-out', disabled: true };
+            }
+            return { class: '', disabled: false };
+        }
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -472,6 +593,10 @@
         }
 
         function addToCart(name, size, image, event) {
+            if (size.includes('即将上架') || size.includes('下架')) {
+                showMessage('⛔ 该商品暂不可选');
+                return;
+            }
             cart.push({ name, size, image });
             
             smoothHeightTransition(() => {
@@ -557,20 +682,82 @@
             filterProducts('all');
         }
 
-        async function initApp() {
-            sampleImages = await loadProducts();
+        // 数据源配置
+        const dataSources = {
+            'kenan.txt': {
+                title: '📦 柯南',
+                link: 'https://docs.qq.com/sheet/DT0tsVExYc0xkc2dF?tab=BB08J2'
+            },
+            'xiaoming.txt': {
+                title: '🌟 小明',
+                link: 'edge://newtab/'
+            }
+        };
+
+        // 初始化数据源菜单
+        function initDataSourceMenu() {
+            const optionsContainer = document.getElementById('dataSourceOptions');
+            optionsContainer.innerHTML = Object.entries(dataSources).map(([source, config]) => `
+                <div class="data-source-option" 
+                     onclick="changeDataSource('${source}')"
+                     data-source="${source}">
+                    ${config.title}
+                </div>
+            `).join('');
+        }
+
+        // 切换数据源菜单显示
+        function toggleDataSourceMenu() {
+            const options = document.getElementById('dataSourceOptions');
+            const btn = document.querySelector('.data-source-btn');
+            
+            options.classList.toggle('show');
+            btn.classList.toggle('rotated'); // 通过CSS类控制旋转
+        }
+
+        // 关闭数据源菜单（点击外部时）
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.data-source-menu')) {
+                document.getElementById('dataSourceOptions').classList.remove('show');
+            }
+        });
+
+        async function initApp(dataSource = 'kenan.txt') {
+            sampleImages = await loadProducts(dataSource);
             renderProducts();
             createFilterButtons();
             initFilterButtons();
+            cart = [];  // 切换数据源时清空购物车
             updateCart();
+            initDataSourceMenu(); // 初始化菜单选项
+        }
+
+        // 新增数据源切换函数
+        function changeDataSource(source) {
+            const config = dataSources[source];
+            if (!config) return;
+
+            // 更新标题和链接
+            const titleElement = document.getElementById('mainTitle');
+            titleElement.textContent = config.title;
+            titleElement.onclick = () => window.open(config.link, '_blank');
+
+            // 关闭菜单并重置按钮状态
+            const options = document.getElementById('dataSourceOptions');
+            const btn = document.querySelector('.data-source-btn');
+            options.classList.remove('show');
+            btn.classList.remove('rotated'); // 强制重置旋转状态
+            
+            // 刷新数据
+            showMessage(`🔄 正在切换至：${config.title}`);
+            initApp(source);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            initApp();
             const searchInput = document.getElementById('searchInput');
             searchInput.addEventListener('input', handleSearch);
             searchInput.addEventListener('focus', handleSearch);
-            
-            initApp();
         });
     </script>
 </body>
