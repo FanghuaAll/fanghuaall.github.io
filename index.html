@@ -565,17 +565,13 @@
 
         function getSizeStatus(size) {
             if (size.includes('即将上架')) {
-                return { class: 'soon', disabled: true };
+                return { class: 'soon', disabled: true，clickable: false };
             }
             if (size.includes('下架')) {
-                return { class: 'sold-out', disabled: true };
-                clickable: false
+                return { class: 'sold-out', disabled: true，clickable: false };
+ 
             }
-                    return { 
-            class: '', 
-            disabled: false,
-            clickable: true
-        };
+                    return { class: ''，disabled: false，clickable: true };
         }
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
