@@ -477,7 +477,7 @@
 
         async function loadProducts() {
             try {
-                const response = await fetch('products.txt');
+                const response = await fetch('kenan.txt');
                 const text = await response.text();
                 return text.split('\n')
                           .map(line => line.trim())
