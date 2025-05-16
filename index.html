@@ -130,9 +130,6 @@
             padding: 0 10px;
         }
 
-        .size-btn:hover,
-        .filter-btn:hover,
-        .clear-btn:hover,
         .copy-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -266,11 +263,18 @@
             flex-shrink: 0;
         }
 
+    /* 通用优化 */
+    .cart-buttons button {
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(2px);
+    }
+
         .clear-btn {
             flex: 1;
             padding: 12px;
-            background: #ff4444;
-            color: white;
+            background: #FFB3BA !important; /* 柔和的珊瑚粉 */
+            color: #6D454C !important; /* 深玫瑰色文字 */
             border: none;
             border-radius: 8px;
             font-weight: 500;
@@ -278,14 +282,15 @@
         }
 
         .clear-btn:hover {
-            background: #ff6666;
+            background: #FF9AA2 !important; /* 稍深的珊瑚色 */
+            box-shadow: 0 2px 8px rgba(255,179,186,0.3);
         }
 
         .copy-btn {
             flex: 2;
             padding: 12px;
-            background: #4CAF50;
-            color: white;
+            background: #B3E0CC !important; /* 浅薄荷绿 */
+            color: #3A6657 !important; /* 深青苔色文字 */
             border: none;
             border-radius: 8px;
             font-weight: 500;
@@ -293,7 +298,8 @@
         }
 
         .copy-btn:hover {
-            background: #66bb6a;
+            background: #9BD4BC !important; /* 稍深的薄荷色 */
+            box-shadow: 0 2px 8px rgba(179,224,204,0.3);
         }
 
         .cart-item {
