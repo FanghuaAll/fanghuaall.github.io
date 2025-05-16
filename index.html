@@ -477,19 +477,19 @@
     <script>
         let sampleImages = [];
 
-        async function loadProducts() {
-            try {
-                const response = await fetch('kenan.txt');
-                const text = await response.text();
-                return text.split('\n')
-                          .map(line => line.trim())
-                          .filter(line => line.length > 0);
-            } catch (error) {
-                console.error('加载商品数据失败:', error);
-                showMessage('❌ 无法加载商品数据');
-                return [];
-            }
-        }
+async function loadProducts(source) {
+    try {
+        const response = await fetch(source); // 直接使用传入的source参数
+        const text = await response.text();
+        return text.split('\n')
+                  .map(line => line.trim())
+                  .filter(line => line.length > 0 && line.includes('_')); // 增加有效性校验
+    } catch (error) {
+        console.error('加载商品数据失败:', error);
+        showMessage('❌ 无法加载商品数据');
+        return [];
+    }
+}
 
         function parseFileName(fileName) {
             const [name, type, sizes] = fileName.split('_');
@@ -724,36 +724,44 @@
             }
         });
 
-        async function initApp(dataSource = 'kenan.txt') {
-            sampleImages = await loadProducts(dataSource);
-            renderProducts();
-            createFilterButtons();
-            initFilterButtons();
-            cart = [];  // 切换数据源时清空购物车
-            updateCart();
-            initDataSourceMenu(); // 初始化菜单选项
-        }
+async function initApp(dataSource = 'kenan.txt') {
+    try {
+        sampleImages = await loadProducts(dataSource); // 加载新数据源
+        createFilterButtons(); // 先创建过滤器
+        renderProducts();      // 再渲染商品
+        initFilterButtons(); 
+        cart = [];  
+        updateCart();
+        initDataSourceMenu();
+        showMessage(`✅ 已切换至：${dataSources[dataSource].title}`);
+    } catch (error) {
+        console.error('初始化失败:', error);
+        showMessage('❌ 数据加载失败，请检查数据源');
+    }
+}
 
         // 新增数据源切换函数
-        function changeDataSource(source) {
-            const config = dataSources[source];
-            if (!config) return;
+function changeDataSource(source) {
+    const config = dataSources[source];
+    if (!config) return;
 
-            // 更新标题和链接
-            const titleElement = document.getElementById('mainTitle');
-            titleElement.textContent = config.title;
-            titleElement.onclick = () => window.open(config.link, '_blank');
+    // 更新标题和链接
+    const titleElement = document.getElementById('mainTitle');
+    titleElement.textContent = config.title;
+    titleElement.onclick = () => window.open(config.link, '_blank');
 
-            // 关闭菜单并重置按钮状态
-            const options = document.getElementById('dataSourceOptions');
-            const btn = document.querySelector('.data-source-btn');
-            options.classList.remove('show');
-            btn.classList.remove('rotated'); // 强制重置旋转状态
-            
-            // 刷新数据
-            showMessage(`🔄 正在切换至：${config.title}`);
-            initApp(source);
-        }
+    // 关闭菜单并重置按钮状态
+    const options = document.getElementById('dataSourceOptions');
+    const btn = document.querySelector('.data-source-btn');
+    options.classList.remove('show');
+    btn.classList.remove('rotated');
+    
+    // 刷新数据（使用改造后的initApp）
+    initApp(source).catch(() => {
+        showMessage('⚠️ 正在恢复默认数据源...');
+        initApp('kenan.txt'); // 失败时自动恢复默认
+    });
+}
 
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
