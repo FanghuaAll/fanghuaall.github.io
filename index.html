@@ -129,8 +129,12 @@
             text-align: center;
             line-height: 1.4;
             padding: 0 10px;
+            cursor: pointer;  /* 新增指针样式 */
+            transition: color 0.2s;  /* 添加颜色过渡效果 */
         }
-        
+        .product-card h3:hover {
+            color: #2980b9;  /* 悬停时改变颜色增强交互感 */
+       }
         .size-btn:hover,
         .filter-btn:hover,
         .clear-btn:hover,
@@ -544,7 +548,7 @@ async function loadProducts(source) {
                              src="${product.image}" 
                              alt="${product.name}"
                              onerror="this.onerror=null;this.src='sosad.jpg';">
-                        <h3>${product.name}</h3>
+                        <h3 class="copyable-name">${product.name}</h3>  <!-- 添加class -->
                         <div class="size-buttons">
                             ${product.sizes.map(size => {
                                 const status = getSizeStatus(size);
@@ -562,6 +566,29 @@ async function loadProducts(source) {
             }).join('');
         }
 
+        // 新增事件监听
+        document.querySelectorAll('.copyable-name').forEach(nameElement => {
+                nameElement.addEventListener('click', function(e) {
+                    copyToClipboard(this.textContent);
+                    // 添加点击反馈动画
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+        }
+
+        // 新增复制函数
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage(`✅ 已复制：${text}`);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                showMessage('❌ 复制失败，请手动选择文本');
+            });
+        }
+        
         function getSizeStatus(size) {
             if (size.includes('即将上架')) {
                 return { class: 'soon', disabled: true };
