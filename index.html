@@ -564,10 +564,8 @@ async function loadProducts(source) {
                     </div>
                 `;
             }).join('');
-        }
-
-        // 新增事件监听
-        document.querySelectorAll('.copyable-name').forEach(nameElement => {
+         // 新增事件监听
+         document.querySelectorAll('.copyable-name').forEach(nameElement => {
                 nameElement.addEventListener('click', function(e) {
                     copyToClipboard(this.textContent);
                     // 添加点击反馈动画
@@ -578,7 +576,7 @@ async function loadProducts(source) {
                 });
             });
         }
-
+        
         // 新增复制函数
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
