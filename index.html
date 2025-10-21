@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>报货</title>
+    <title>报货系统</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* 液态玻璃效果样式 */
         * {
             margin: 0;
             padding: 0;
@@ -84,7 +83,6 @@
             justify-content: center;
         }
 
-        /* 搜索框容器 */
         .search-container {
             position: relative;
             display: flex;
@@ -113,7 +111,6 @@
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
         }
 
-        /* 清除搜索按钮 */
         .clear-search {
             position: absolute;
             right: 12px;
@@ -135,7 +132,6 @@
             background: rgba(44, 62, 80, 0.1);
         }
 
-        /* 数据源切换区域 */
         .source-selector {
             display: flex;
             gap: 10px;
@@ -169,7 +165,6 @@
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
         }
 
-        /* Q弹动画效果 - 应用于所有按钮 */
         .source-btn:active,
         .filter-btn:active,
         .size-btn:active,
@@ -182,7 +177,6 @@
             transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 产品网格样式 */
         .product-grid {
             margin: 120px auto 150px;
             display: grid;
@@ -204,7 +198,6 @@
             min-height: 340px;
         }
 
-        /* 降低卡片悬浮高度 */
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -238,7 +231,7 @@
 
         .product-image {
             width: 100%;
-            height: 100%;
+            height: 140px;
             object-fit: contain;
             border-radius: 12px;
             margin-bottom: 12px;
@@ -299,7 +292,6 @@
             transform: scale(1.05);
         }
 
-        /* 尺码按钮点击效果 - 优化动画 */
         .size-btn.ripple::after {
             content: '';
             position: absolute;
@@ -325,7 +317,6 @@
             }
         }
 
-        /* 购物车面板 - 修复布局问题 */
         .cart-panel {
             position: fixed;
             right: 20px;
@@ -363,9 +354,7 @@
             flex: 1;
             margin-bottom: 15px;
             z-index: 2;
-            /* 确保按钮区域不会被覆盖 */
             max-height: calc(60vh - 180px);
-            /* 隐藏滚动条 */
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -386,7 +375,6 @@
             flex-shrink: 0;
             z-index: 2;
             flex-wrap: wrap;
-            /* 确保按钮区域不会被覆盖 */
             backdrop-filter: blur(10px);
             margin-top: auto;
             position: sticky;
@@ -439,7 +427,6 @@
             transform: scale(1.05);
         }
 
-        /* 筛选栏 */
         .filter-bar {
             position: fixed;
             left: 50%;
@@ -500,7 +487,6 @@
             transform: scale(1.05);
         }
 
-        /* 消息提示 */
         #message {
             position: fixed;
             bottom: 160px;
@@ -522,7 +508,6 @@
             opacity: 1;
         }
 
-        /* 购物车项目 */
         .cart-item {
             display: flex;
             align-items: center;
@@ -557,7 +542,6 @@
             transform: scale(1.05);
         }
 
-        /* 按钮状态样式 */
         .size-btn.soon {
             background: rgba(255, 165, 0, 0.3) !important;
             color: rgba(44, 62, 80, 0.7) !important;
@@ -571,7 +555,6 @@
             opacity: 0.7;
         }
 
-        /* 图片预览弹窗 - 优化动画效果 */
         .preview-modal {
             display: none;
             position: fixed;
@@ -623,7 +606,6 @@
             to { opacity: 1; }
         }
 
-        /* Q弹关闭动画 */
         .preview-modal.closing .preview-image {
             animation: popOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -643,7 +625,6 @@
             }
         }
 
-        /* 加载动画 */
         .loading {
             display: flex;
             justify-content: center;
@@ -667,7 +648,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 响应式设计 */
         @media (max-width: 768px) {
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -752,7 +732,6 @@
         </div>
     </div>
 
-    <!-- 图片预览弹窗 - 优化版本 -->
     <div id="previewModal" class="preview-modal" onclick="closePreview()">
         <img id="previewImage" class="preview-image" src="" alt="预览图片">
     </div>
@@ -760,23 +739,21 @@
     <div id="message"></div>
 
     <script>
-        // TXT数据源配置
+        // 数据源配置
         const dataSources = {
             'kenan': {
                 title: '📦 柯南',
                 link: 'https://docs.qq.com/sheet/DT0tsVExYc0xkc2dF?tab=BB08J2',
-                // 替换为实际的TXT文件URL
                 txtUrl: 'https://fanghuaall.github.io/kenan.txt'
             },
             'xiaoming': {
                 title: '🌟 小明',
                 link: 'edge://newtab/',
-                // 替换为实际的TXT文件URL
                 txtUrl: 'https://fanghuaall.github.io/xiaoming.txt'
             }
         };
 
-        // 备用数据 - 当网络请求失败时使用
+        // 备用数据
         const fallbackData = {
             'kenan': [
                 "商品A_类型1_S.M.L.xxl",
@@ -805,7 +782,6 @@
             showMessage('🔄 正在加载商品数据...');
             
             try {
-                // 使用fetch API从网络获取TXT文件
                 const response = await fetch(dataSources[source].txtUrl, {
                     method: 'GET',
                     headers: {
@@ -819,10 +795,9 @@
 
                 const textData = await response.text();
                 
-                // 解析TXT文件内容 - 按行分割并过滤空行
                 const lines = textData.split('\n')
                     .map(line => line.trim())
-                    .filter(line => line.length > 0 && !line.startsWith('#')); // 过滤空行和注释行
+                    .filter(line => line.length > 0 && !line.startsWith('#'));
                 
                 if (lines.length > 0) {
                     showMessage('✅ 数据加载成功');
@@ -834,7 +809,6 @@
                 console.error('从TXT文件加载数据失败:', error);
                 showMessage('⚠️ 使用备用数据');
                 
-                // 使用备用数据
                 return fallbackData[source] || [];
             }
         }
@@ -846,8 +820,7 @@
                 name, 
                 type,
                 sizes: sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'],
-                // 假设图片URL基于商品名称
-                image: 'img/' + name + '.jpg'
+                image: 'https://via.placeholder.com/200x140?text=' + name
             };
         }
 
@@ -905,7 +878,7 @@
                             <img class="product-image" 
                                  src="${product.image}" 
                                  alt="${product.name}"
-                                 onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuNSkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj4k{e3Byb2R1Y3QubmFtZX08L3RleHQ+PC9zdmc+';">
+                                 onerror="this.onerror=null;this.src='https://via.placeholder.com/200x140?text=${product.name}'">
                             <h3 class="copyable-name">${product.name}</h3>
                             <div class="size-buttons">
                                 ${product.sizes.map(size => {
@@ -1017,7 +990,7 @@
             
             cartItems.innerHTML = cart.map((item, index) => `
                 <div class="cart-item" style="animation: fadeIn 0.3s ease-out;">
-                    <img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+JHtpdGVtLm5hbWV9PC90ZXh0Pjwvc3ZnPg=='">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50x50?text=${item.name}'">
                     <div class="item-info">
                         <div style="font-weight:500;color:#2c3e50;">${item.name}</div>
                         <div style="color:rgba(44,62,80,0.7);font-size:0.9em;">尺码：${item.size}</div>
@@ -1103,7 +1076,22 @@
             });
         }
 
-        // 导出为图片功能 - 修复版，包含商品图片
+        // 绘制圆角矩形路径
+        function drawRoundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.arcTo(x + width, y, x + width, y + radius, radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+            ctx.lineTo(x + radius, y + height);
+            ctx.arcTo(x, y + height, x, y + height - radius, radius);
+            ctx.lineTo(x, y + radius);
+            ctx.arcTo(x, y, x + radius, y, radius);
+            ctx.closePath();
+        }
+
+        // 导出为图片功能 - 修复版，包含圆角商品图片
         async function exportToImage() {
             if (cart.length === 0) {
                 showMessage('❌ 购物车为空，无法导出');
@@ -1119,7 +1107,7 @@
                 
                 // 设置画布尺寸 - 根据实际卡片数量计算
                 const cardWidth = 240;
-                const cardHeight = 300;
+                const cardHeight = 320;
                 const padding = 25;
                 
                 // 使用智能算法计算最佳列数
@@ -1131,8 +1119,8 @@
                 
                 // 设置背景 - 使用浅色渐变背景
                 const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                gradient.addColorStop(0, '#f5f7fa');
-                gradient.addColorStop(1, '#c3cfe2');
+                gradient.addColorStop(0, '#d2dff3');
+                gradient.addColorStop(1, '#aeb9cd');
                 
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1154,8 +1142,7 @@
                         
                         // 绘制卡片背景（玻璃效果）
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-                        ctx.beginPath();
-                        ctx.roundRect(x, y, cardWidth, cardHeight, 20);
+                        drawRoundedRect(ctx, x, y, cardWidth, cardHeight, 20);
                         ctx.fill();
                         
                         // 绘制边框
@@ -1163,27 +1150,36 @@
                         ctx.lineWidth = 1;
                         ctx.stroke();
                         
-                        // 绘制商品图片
+                        // 绘制商品图片区域
+                        const imgX = x + 25;
+                        const imgY = y + 25;
+                        const imgWidth = cardWidth - 50;
+                        const imgHeight = 190;
+                        
+                        // 绘制圆角图片背景
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                        drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
+                        ctx.fill();
+                        
+                        // 绘制商品图片（圆角）
                         const imgResult = images[cardIndex];
                         if (imgResult.status === 'fulfilled') {
                             const img = imgResult.value;
-                            // 计算图片尺寸和位置，使其适应卡片
-                            const imgWidth = cardWidth - 50;
-                            const imgHeight = 140;
-                            const imgX = x + 25;
-                            const imgY = y + 25;
                             
-                            // 绘制白色背景
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                            ctx.fillRect(imgX, imgY, imgWidth, imgHeight);
+                            // 保存当前状态
+                            ctx.save();
                             
-                            // 绘制图片
+                            // 创建圆角矩形路径并裁剪
+                            drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
+                            ctx.clip();
+                            
+                            // 绘制图片（适应整个区域）
                             ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+                            
+                            // 恢复状态
+                            ctx.restore();
                         } else {
                             // 如果图片加载失败，绘制占位符
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                            ctx.fillRect(x + 25, y + 25, cardWidth - 50, 140);
-                            
                             ctx.fillStyle = 'rgba(44, 62, 80, 0.3)';
                             ctx.font = '12px Arial';
                             ctx.textAlign = 'center';
@@ -1192,23 +1188,21 @@
                         
                         // 绘制商品名称
                         ctx.fillStyle = '#2c3e50';
-                        ctx.font = 'bold 16px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(item.name, x + cardWidth/2, y + 190);
+                        ctx.font = 'bold 14px Arial';
+                        ctx.fillText(item.name, x + cardWidth/2, y + 240);
                         
                         // 绘制尺码按钮
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                        ctx.beginPath();
-                        ctx.roundRect(x + 25, y + 210, cardWidth - 50, 35, 10);
+                        drawRoundedRect(ctx, x + 25, y + 260, cardWidth - 50, 35, 10);
                         ctx.fill();
                         
                         ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
                         ctx.stroke();
                         
                         ctx.fillStyle = '#2c3e50';
-                        ctx.font = '14px Arial';
+                        ctx.font = 'bold 14px Arial';
                         ctx.textAlign = 'center';
-                        ctx.fillText(item.size, x + cardWidth/2, y + 232);
+                        ctx.fillText(item.size, x + cardWidth/2, y + 282);
                         
                         cardIndex++;
                     }
