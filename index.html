@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>报货</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* 液态玻璃效果样式 */
         * {
             margin: 0;
             padding: 0;
@@ -84,7 +82,6 @@
             justify-content: center;
         }
 
-        /* 搜索框容器 */
         .search-container {
             position: relative;
             display: flex;
@@ -113,7 +110,6 @@
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
         }
 
-        /* 清除搜索按钮 */
         .clear-search {
             position: absolute;
             right: 12px;
@@ -135,7 +131,6 @@
             background: rgba(44, 62, 80, 0.1);
         }
 
-        /* 数据源切换区域 */
         .source-selector {
             display: flex;
             gap: 10px;
@@ -169,7 +164,6 @@
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
         }
 
-        /* Q弹动画效果 - 应用于所有按钮 */
         .source-btn:active,
         .filter-btn:active,
         .size-btn:active,
@@ -182,7 +176,6 @@
             transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 产品网格样式 */
         .product-grid {
             margin: 120px auto 150px;
             display: grid;
@@ -204,7 +197,6 @@
             min-height: 340px;
         }
 
-        /* 降低卡片悬浮高度 */
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -299,7 +291,6 @@
             transform: scale(1.05);
         }
 
-        /* 尺码按钮点击效果 - 优化动画 */
         .size-btn.ripple::after {
             content: '';
             position: absolute;
@@ -325,7 +316,6 @@
             }
         }
 
-        /* 购物车面板 - 修复布局问题 */
         .cart-panel {
             position: fixed;
             right: 20px;
@@ -363,9 +353,7 @@
             flex: 1;
             margin-bottom: 15px;
             z-index: 2;
-            /* 确保按钮区域不会被覆盖 */
             max-height: calc(60vh - 180px);
-            /* 隐藏滚动条 */
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -386,7 +374,6 @@
             flex-shrink: 0;
             z-index: 2;
             flex-wrap: wrap;
-            /* 确保按钮区域不会被覆盖 */
             backdrop-filter: blur(10px);
             margin-top: auto;
             position: sticky;
@@ -439,7 +426,6 @@
             transform: scale(1.05);
         }
 
-        /* 筛选栏 */
         .filter-bar {
             position: fixed;
             left: 50%;
@@ -500,7 +486,6 @@
             transform: scale(1.05);
         }
 
-        /* 消息提示 */
         #message {
             position: fixed;
             bottom: 160px;
@@ -522,7 +507,6 @@
             opacity: 1;
         }
 
-        /* 购物车项目 */
         .cart-item {
             display: flex;
             align-items: center;
@@ -557,7 +541,6 @@
             transform: scale(1.05);
         }
 
-        /* 按钮状态样式 */
         .size-btn.soon {
             background: rgba(255, 165, 0, 0.3) !important;
             color: rgba(44, 62, 80, 0.7) !important;
@@ -571,7 +554,6 @@
             opacity: 0.7;
         }
 
-        /* 图片预览弹窗 - 优化动画效果 */
         .preview-modal {
             display: none;
             position: fixed;
@@ -623,7 +605,6 @@
             to { opacity: 1; }
         }
 
-        /* Q弹关闭动画 */
         .preview-modal.closing .preview-image {
             animation: popOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -643,7 +624,6 @@
             }
         }
 
-        /* 加载动画 */
         .loading {
             display: flex;
             justify-content: center;
@@ -667,7 +647,24 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 响应式设计 */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         @media (max-width: 768px) {
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -744,6 +741,9 @@
         <div class="cart-content">
             <h3>📝 当前清单 (<span id="cartCount">0</span>)</h3>
             <div id="cartItems"></div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
             <div class="cart-buttons">
                 <button class="clear-btn" onclick="clearCart()">🗑️ 清空</button>
                 <button class="copy-btn" onclick="copyCart()">📋 复制清单</button>
@@ -752,31 +752,28 @@
         </div>
     </div>
 
-    <!-- 图片预览弹窗 - 优化版本 -->
-    <div id="previewModal" class="preview-modal" onclick="closePreview()">
+    <div id="previewModal" class="preview-modal">
         <img id="previewImage" class="preview-image" src="" alt="预览图片">
     </div>
 
     <div id="message"></div>
 
     <script>
-        // TXT数据源配置
+        // 数据源配置
         const dataSources = {
             'kenan': {
                 title: '📦 柯南',
                 link: 'https://docs.qq.com/sheet/DT0tsVExYc0xkc2dF?tab=BB08J2',
-                // 替换为实际的TXT文件URL
                 txtUrl: 'https://fanghuaall.github.io/kenan.txt'
             },
             'xiaoming': {
                 title: '🌟 小明',
                 link: 'edge://newtab/',
-                // 替换为实际的TXT文件URL
                 txtUrl: 'https://fanghuaall.github.io/xiaoming.txt'
             }
         };
 
-        // 备用数据 - 当网络请求失败时使用
+        // 备用数据
         const fallbackData = {
             'kenan': [
                 "商品A_类型1_S.M.L.xxl",
@@ -799,13 +796,29 @@
         let sampleImages = [];
         let currentDataSource = 'kenan';
         let currentCanvas = null;
+        let isExporting = false;
+        
+        // 图片缓存 - 加速图片加载
+        const imageCache = new Map();
+        
+        // 预加载图片 - 提前加载购物车中的图片
+        function preloadCartImages() {
+            if (cart.length === 0) return;
+            
+            cart.forEach(item => {
+                if (!imageCache.has(item.image)) {
+                    loadImageWithFallback(item.image).then(img => {
+                        if (img) imageCache.set(item.image, img);
+                    });
+                }
+            });
+        }
 
         // 从TXT文件获取商品数据
         async function loadProducts(source) {
             showMessage('🔄 正在加载商品数据...');
             
             try {
-                // 使用fetch API从网络获取TXT文件
                 const response = await fetch(dataSources[source].txtUrl, {
                     method: 'GET',
                     headers: {
@@ -819,10 +832,9 @@
 
                 const textData = await response.text();
                 
-                // 解析TXT文件内容 - 按行分割并过滤空行
                 const lines = textData.split('\n')
                     .map(line => line.trim())
-                    .filter(line => line.length > 0 && !line.startsWith('#')); // 过滤空行和注释行
+                    .filter(line => line.length > 0 && !line.startsWith('#'));
                 
                 if (lines.length > 0) {
                     showMessage('✅ 数据加载成功');
@@ -834,7 +846,6 @@
                 console.error('从TXT文件加载数据失败:', error);
                 showMessage('⚠️ 使用备用数据');
                 
-                // 使用备用数据
                 return fallbackData[source] || [];
             }
         }
@@ -846,7 +857,6 @@
                 name, 
                 type,
                 sizes: sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'],
-                // 假设图片URL基于商品名称
                 image: 'img/' + name + '.jpg'
             };
         }
@@ -1000,6 +1010,13 @@
             smoothHeightTransition(() => {
                 updateCart();
                 
+                // 预加载图片
+                if (!imageCache.has(image)) {
+                    loadImageWithFallback(image).then(img => {
+                        if (img) imageCache.set(image, img);
+                    });
+                }
+                
                 setTimeout(() => {
                     const cartItems = document.getElementById('cartItems');
                     cartItems.scrollTo({
@@ -1067,32 +1084,30 @@
 
         // 根据用户提供的具体规则计算最佳列数
         function calculateOptimalColumns(itemCount) {
-            // 根据用户提供的具体规则
             switch(itemCount) {
-                case 1: return 1;  // 1列1行
-                case 2: return 2;  // 2列1行
-                case 3: return 3;  // 3列1行
-                case 4: return 2;  // 2列2行
-                case 5: return 5;  // 5列1行
-                case 6: return 3;  // 3列2行
-                case 7: return 4;  // 4列2行（第一行4个，第二行3个）
-                case 8: return 4;  // 4列2行（每行4个）
-                case 9: return 3;  // 3列3行
-                case 10: return 5; // 5列2行
-                case 11: return 4; // 4列3行（第一行4个，第二行4个，第三行3个）
-                case 12: return 4; // 4列3行（每行4个）
-                case 13: return 5; // 5列3行（第一行5个，第二行5个，第三行3个）
-                case 14: return 5; // 5列3行（第一行5个，第二行5个，第三行4个）
-                case 15: return 5; // 5列3行（每行5个）
-                case 16: return 4; // 4列4行
+                case 1: return 1;
+                case 2: return 2;
+                case 3: return 3;
+                case 4: return 2;
+                case 5: return 5;
+                case 6: return 3;
+                case 7: return 4;
+                case 8: return 4;
+                case 9: return 3;
+                case 10: return 5;
+                case 11: return 4;
+                case 12: return 4;
+                case 13: return 5;
+                case 14: return 5;
+                case 15: return 5;
+                case 16: return 4;
                 default: 
-                    // 对于更多商品，使用更智能的算法
-                    if (itemCount <= 20) return 5; // 最多5列
-                    return 5; // 默认5列
+                    if (itemCount <= 20) return 5;
+                    return 5;
             }
         }
 
-        // 加载图片的辅助函数
+        // 改进的图片加载函数
         function loadImage(src) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -1120,23 +1135,35 @@
             });
         }
 
-        // 导出为图片功能 - 修复版，支持多次导出
+        // 导出为图片功能 - 优化版本，大幅提升生成速度
         async function exportToImage() {
+            if (isExporting) {
+                showMessage('🔄 正在生成图片，请稍候...');
+                return;
+            }
+            
             if (cart.length === 0) {
                 showMessage('❌ 购物车为空，无法导出');
                 return;
             }
 
+            isExporting = true;
             showMessage('🔄 正在生成图片...');
+            
+            // 显示进度条
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
 
             try {
                 // 创建新的画布，避免复用问题
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // 设置画布尺寸
-                const cardWidth = 250;
-                const cardHeight = 330;
+                // 设置画布尺寸 - 根据实际卡片数量计算
+                const cardWidth = 240;
+                const cardHeight = 320;
                 const padding = 25;
                 
                 // 计算布局
@@ -1153,10 +1180,41 @@
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // 绘制所有卡片
+                // 批量加载图片 - 大幅优化加载速度
+                const imageLoadPromises = [];
+                const imageMap = new Map();
+                
+                // 首先尝试从缓存加载图片
+                for (let i = 0; i < cart.length; i++) {
+                    const item = cart[i];
+                    if (imageCache.has(item.image)) {
+                        imageMap.set(i, imageCache.get(item.image));
+                    } else {
+                        // 如果缓存中没有，则创建加载承诺
+                        imageLoadPromises.push(
+                            loadImageWithFallback(item.image).then(img => {
+                                if (img) {
+                                    imageMap.set(i, img);
+                                    imageCache.set(item.image, img); // 缓存图片
+                                }
+                                return img;
+                            })
+                        );
+                    }
+                }
+                
+                // 等待所有图片加载完成
+                if (imageLoadPromises.length > 0) {
+                    await Promise.all(imageLoadPromises);
+                }
+                
+                // 绘制所有卡片 - 使用分块绘制避免阻塞
                 let cardIndex = 0;
                 let loadedImagesCount = 0;
                 const totalImages = cart.length;
+                
+                // 分块绘制 - 大幅提升绘制性能
+                const chunkSize = Math.max(1, Math.floor(cart.length / 10)); // 分成10块
                 
                 for (let row = 0; row < rows; row++) {
                     for (let col = 0; col < cardsPerRow; col++) {
@@ -1179,28 +1237,24 @@
                         const imgX = x + 25;
                         const imgY = y + 25;
                         const imgWidth = cardWidth - 50;
-                        const imgHeight = 200;
+                        const imgHeight = 190;
                         
                         // 图片背景
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                         drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
                         ctx.fill();
                         
-                        // 尝试加载图片，如果失败则使用占位符
-                        try {
-                            const img = await loadImageWithFallback(item.image);
-                            if (img) {
-                                ctx.save();
-                                drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
-                                ctx.clip();
-                                ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
-                                ctx.restore();
-                                loadedImagesCount++;
-                            } else {
-                                drawPlaceholder(ctx, imgX, imgY, imgWidth, imgHeight, item.name);
-                            }
-                        } catch (error) {
-                            console.warn(`图片加载失败: ${item.image}`, error);
+                        // 绘制商品图片（从缓存或已加载的图片中获取）
+                        const img = imageMap.get(cardIndex);
+                        if (img) {
+                            ctx.save();
+                            drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
+                            ctx.clip();
+                            ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+                            ctx.restore();
+                            loadedImagesCount++;
+                        } else {
+                            // 如果图片加载失败，绘制占位符
                             drawPlaceholder(ctx, imgX, imgY, imgWidth, imgHeight, item.name);
                         }
                         
@@ -1215,26 +1269,40 @@
                         let textWidth = ctx.measureText(displayName).width;
                         
                         if (textWidth > maxWidth) {
-                            // 逐步缩短名称直到适合
                             while (textWidth > maxWidth && displayName.length > 3) {
                                 displayName = displayName.substring(0, displayName.length - 1) + '...';
                                 textWidth = ctx.measureText(displayName).width;
                             }
                         }
                         
-                        ctx.fillText(displayName, x + cardWidth/2, y + 250);
+                        ctx.fillText(displayName, x + cardWidth/2, y + 240);
                         
                         // 尺码按钮
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                        drawRoundedRect(ctx, x + 25, y + 270, cardWidth - 50, 35, 10);
+                        drawRoundedRect(ctx, x + 25, y + 260, cardWidth - 50, 35, 10);
                         ctx.fill();
                         ctx.stroke();
                         
                         ctx.fillStyle = '#2c3e50';
                         ctx.font = 'bold 14px Arial';
-                        ctx.fillText(item.size, x + cardWidth/2, y + 292);
+                        ctx.fillText(item.size, x + cardWidth/2, y + 282);
                         
                         cardIndex++;
+                        
+                        // 更新进度条
+                        if (cardIndex % chunkSize === 0 || cardIndex === cart.length) {
+                            const progress = (cardIndex / cart.length) * 100;
+                            progressFill.style.width = `${progress}%`;
+                            
+                            // 使用requestIdleCallback避免阻塞UI
+                            await new Promise(resolve => {
+                                if (typeof requestIdleCallback !== 'undefined') {
+                                    requestIdleCallback(() => resolve());
+                                } else {
+                                    setTimeout(resolve, 0);
+                                }
+                            });
+                        }
                     }
                 }
                 
@@ -1249,6 +1317,9 @@
                 previewImage.src = dataURL;
                 previewModal.classList.add('show');
                 
+                // 隐藏进度条
+                progressBar.style.display = 'none';
+                
                 // 显示加载结果
                 if (loadedImagesCount === totalImages) {
                     showMessage('✅ 图片生成成功！点击图片可复制');
@@ -1259,12 +1330,23 @@
             } catch (error) {
                 console.error('生成图片失败:', error);
                 showMessage('❌ 图片生成失败: ' + error.message);
+                
+                // 隐藏进度条
+                progressBar.style.display = 'none';
+            } finally {
+                isExporting = false;
             }
         }
 
         // 改进的图片加载函数，包含重试机制
         function loadImageWithFallback(src) {
             return new Promise((resolve) => {
+                // 首先检查缓存
+                if (imageCache.has(src)) {
+                    resolve(imageCache.get(src));
+                    return;
+                }
+                
                 const img = new Image();
                 img.crossOrigin = "anonymous";
                 
@@ -1272,7 +1354,7 @@
                 const timeout = setTimeout(() => {
                     console.warn(`图片加载超时: ${src}`);
                     resolve(null);
-                }, 5000);
+                }, 3000); // 减少超时时间
                 
                 img.onload = () => {
                     clearTimeout(timeout);
@@ -1508,10 +1590,16 @@
             // 清除按钮事件监听
             clearButton.addEventListener('click', clearSearch);
             
-            // 预览图片点击复制
-            document.getElementById('previewImage').addEventListener('click', function(e) {
-                e.stopPropagation(); // 防止事件冒泡到模态框
-                copyImageToClipboard();
+            // 预览图片点击复制 - 使用事件委托
+            document.getElementById('previewModal').addEventListener('click', function(e) {
+                if (e.target.id === 'previewImage') {
+                    // 点击的是图片，则复制图片
+                    e.stopPropagation();
+                    copyImageToClipboard();
+                } else {
+                    // 点击的是弹窗背景，则关闭预览
+                    closePreview();
+                }
             });
             
             // 添加CSS动画
@@ -1552,4 +1640,3 @@
     </script>
 </body>
 </html>
-
