@@ -1135,8 +1135,8 @@
                 const ctx = canvas.getContext('2d');
                 
                 // 设置画布尺寸
-                const cardWidth = 240;
-                const cardHeight = 320;
+                const cardWidth = 250;
+                const cardHeight = 330;
                 const padding = 25;
                 
                 // 计算布局
@@ -1179,7 +1179,7 @@
                         const imgX = x + 25;
                         const imgY = y + 25;
                         const imgWidth = cardWidth - 50;
-                        const imgHeight = 190;
+                        const imgHeight = 200;
                         
                         // 图片背景
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -1222,17 +1222,17 @@
                             }
                         }
                         
-                        ctx.fillText(displayName, x + cardWidth/2, y + 240);
+                        ctx.fillText(displayName, x + cardWidth/2, y + 250);
                         
                         // 尺码按钮
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                        drawRoundedRect(ctx, x + 25, y + 260, cardWidth - 50, 35, 10);
+                        drawRoundedRect(ctx, x + 25, y + 270, cardWidth - 50, 35, 10);
                         ctx.fill();
                         ctx.stroke();
                         
                         ctx.fillStyle = '#2c3e50';
                         ctx.font = 'bold 14px Arial';
-                        ctx.fillText(item.size, x + cardWidth/2, y + 282);
+                        ctx.fillText(item.size, x + cardWidth/2, y + 292);
                         
                         cardIndex++;
                     }
@@ -1552,3 +1552,4 @@
     </script>
 </body>
 </html>
+
