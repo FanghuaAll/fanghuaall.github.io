@@ -1097,52 +1097,66 @@
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
-                img.onload = () => resolve(img);
-                img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-                img.src = src;
+                
+                // 设置超时机制
+                const timeout = setTimeout(() => {
+                    reject(new Error(`图片加载超时: ${src}`));
+                }, 8000);
+                
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    resolve(img);
+                };
+                
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    reject(new Error(`无法加载图片: ${src}`));
+                };
+                
+                // 避免缓存问题
+                const timestamp = new Date().getTime();
+                const url = src.includes('?') ? `${src}&t=${timestamp}` : `${src}?t=${timestamp}`;
+                img.src = url;
             });
         }
 
-        // 导出为图片功能 - 修复版，包含商品图片
+        // 导出为图片功能 - 修复版，支持多次导出
         async function exportToImage() {
             if (cart.length === 0) {
                 showMessage('❌ 购物车为空，无法导出');
                 return;
             }
 
-            showMessage('🔄 正在加载图片并生成预览...');
+            showMessage('🔄 正在生成图片...');
 
             try {
-                // 创建画布
+                // 创建新的画布，避免复用问题
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // 设置画布尺寸 - 根据实际卡片数量计算
+                // 设置画布尺寸
                 const cardWidth = 240;
                 const cardHeight = 320;
                 const padding = 25;
                 
-                // 使用智能算法计算最佳列数
+                // 计算布局
                 const cardsPerRow = calculateOptimalColumns(cart.length);
                 const rows = Math.ceil(cart.length / cardsPerRow);
                 
                 canvas.width = cardsPerRow * cardWidth + (cardsPerRow + 1) * padding;
                 canvas.height = rows * cardHeight + (rows + 1) * padding;
                 
-                // 设置背景 - 使用浅色渐变背景
+                // 设置背景
                 const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
                 gradient.addColorStop(0, '#d2dff3');
                 gradient.addColorStop(1, '#aeb9cd');
-                
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // 加载所有商品图片
-                const imagePromises = cart.map(item => loadImage(item.image));
-                const images = await Promise.allSettled(imagePromises);
-                
-                // 绘制每个卡片
+                // 绘制所有卡片
                 let cardIndex = 0;
+                let loadedImagesCount = 0;
+                const totalImages = cart.length;
                 
                 for (let row = 0; row < rows; row++) {
                     for (let col = 0; col < cardsPerRow; col++) {
@@ -1152,87 +1166,164 @@
                         const x = col * cardWidth + (col + 1) * padding;
                         const y = row * cardHeight + (row + 1) * padding;
                         
-                        // 绘制卡片背景（玻璃效果）
+                        // 绘制卡片背景
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
                         drawRoundedRect(ctx, x, y, cardWidth, cardHeight, 20);
                         ctx.fill();
                         
-                        // 绘制边框
                         ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
                         ctx.lineWidth = 1;
                         ctx.stroke();
                         
-                        // 绘制商品图片区域
+                        // 图片区域
                         const imgX = x + 25;
                         const imgY = y + 25;
                         const imgWidth = cardWidth - 50;
                         const imgHeight = 190;
                         
-                        // 绘制圆角图片背景
+                        // 图片背景
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                         drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
                         ctx.fill();
                         
-                        // 绘制商品图片（圆角）
-                        const imgResult = images[cardIndex];
-                        if (imgResult.status === 'fulfilled') {
-                            const img = imgResult.value;
-                            
-                            // 保存当前状态
-                            ctx.save();
-                            
-                            // 创建圆角矩形路径并裁剪
-                            drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
-                            ctx.clip();
-                            
-                            // 绘制图片（适应整个区域）
-                            ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
-                            
-                            // 恢复状态
-                            ctx.restore();
-                        } else {
-                            // 如果图片加载失败，绘制占位符
-                            ctx.fillStyle = 'rgba(44, 62, 80, 0.3)';
-                            ctx.font = '12px Arial';
-                            ctx.textAlign = 'center';
-                            ctx.fillText('图片加载失败', x + cardWidth/2, y + 100);
+                        // 尝试加载图片，如果失败则使用占位符
+                        try {
+                            const img = await loadImageWithFallback(item.image);
+                            if (img) {
+                                ctx.save();
+                                drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
+                                ctx.clip();
+                                ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+                                ctx.restore();
+                                loadedImagesCount++;
+                            } else {
+                                drawPlaceholder(ctx, imgX, imgY, imgWidth, imgHeight, item.name);
+                            }
+                        } catch (error) {
+                            console.warn(`图片加载失败: ${item.image}`, error);
+                            drawPlaceholder(ctx, imgX, imgY, imgWidth, imgHeight, item.name);
                         }
                         
-                        // 绘制商品名称
+                        // 商品名称
                         ctx.fillStyle = '#2c3e50';
                         ctx.font = 'bold 14px Arial';
-                        ctx.fillText(item.name, x + cardWidth/2, y + 240);
+                        ctx.textAlign = 'center';
                         
-                        // 绘制尺码按钮
+                        // 名称过长时截断
+                        let displayName = item.name;
+                        const maxWidth = cardWidth - 50;
+                        let textWidth = ctx.measureText(displayName).width;
+                        
+                        if (textWidth > maxWidth) {
+                            // 逐步缩短名称直到适合
+                            while (textWidth > maxWidth && displayName.length > 3) {
+                                displayName = displayName.substring(0, displayName.length - 1) + '...';
+                                textWidth = ctx.measureText(displayName).width;
+                            }
+                        }
+                        
+                        ctx.fillText(displayName, x + cardWidth/2, y + 240);
+                        
+                        // 尺码按钮
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                         drawRoundedRect(ctx, x + 25, y + 260, cardWidth - 50, 35, 10);
                         ctx.fill();
-                        
-                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
                         ctx.stroke();
                         
                         ctx.fillStyle = '#2c3e50';
                         ctx.font = 'bold 14px Arial';
-                        ctx.textAlign = 'center';
                         ctx.fillText(item.size, x + cardWidth/2, y + 282);
                         
                         cardIndex++;
                     }
                 }
                 
-                // 保存canvas用于后续复制
+                // 更新全局画布引用
                 currentCanvas = canvas;
                 
-                // 将Canvas转换为DataURL并显示预览
+                // 显示预览
                 const dataURL = canvas.toDataURL('image/png');
-                document.getElementById('previewImage').src = dataURL;
-                document.getElementById('previewModal').classList.add('show');
+                const previewImage = document.getElementById('previewImage');
+                const previewModal = document.getElementById('previewModal');
                 
-                showMessage('✅ 图片生成成功！点击图片可复制');
+                previewImage.src = dataURL;
+                previewModal.classList.add('show');
+                
+                // 显示加载结果
+                if (loadedImagesCount === totalImages) {
+                    showMessage('✅ 图片生成成功！点击图片可复制');
+                } else {
+                    showMessage(`⚠️ 图片生成完成 (${loadedImagesCount}/${totalImages} 张图片加载成功)`);
+                }
+                
             } catch (error) {
                 console.error('生成图片失败:', error);
-                showMessage('❌ 图片生成失败，请重试');
+                showMessage('❌ 图片生成失败: ' + error.message);
             }
+        }
+
+        // 改进的图片加载函数，包含重试机制
+        function loadImageWithFallback(src) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                
+                // 设置超时
+                const timeout = setTimeout(() => {
+                    console.warn(`图片加载超时: ${src}`);
+                    resolve(null);
+                }, 5000);
+                
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    resolve(img);
+                };
+                
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    console.warn(`图片加载失败: ${src}`);
+                    resolve(null);
+                };
+                
+                // 添加时间戳避免缓存问题
+                const timestamp = new Date().getTime();
+                const url = src.includes('?') ? `${src}&t=${timestamp}` : `${src}?t=${timestamp}`;
+                img.src = url;
+            });
+        }
+
+        // 绘制占位符
+        function drawPlaceholder(ctx, x, y, width, height, name) {
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+            ctx.fillRect(x, y, width, height);
+            
+            ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            // 缩短名称以适应占位符
+            let displayName = name;
+            if (name.length > 8) {
+                displayName = name.substring(0, 6) + '...';
+            }
+            
+            ctx.fillText(displayName, x + width/2, y + height/2);
+            ctx.fillText('图片加载失败', x + width/2, y + height/2 + 15);
+        }
+
+        // 绘制圆角矩形
+        function drawRoundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
         }
 
         // 复制图片到剪贴板
