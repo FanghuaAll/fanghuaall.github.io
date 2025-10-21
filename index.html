@@ -1,116 +1,239 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>柯南</title>
+    <title>报货</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* 基础样式 */
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0; 
-            padding: 20px; 
-            background: #f0f2f5;
+        /* 液态玻璃效果样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-    /* 在header样式下方添加标题字体样式 */
-    header h1 {
-        font-family: 'SF Pro Display', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #2c3e50;
-        letter-spacing: -0.5px;
-        position: relative;
-        padding: 8px 0;
-        margin: 0;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-    }
 
-    header h1::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 70%;
-        height: 3px;
-        background: linear-gradient(90deg, rgba(52,152,219,0) 0%, #3498db 50%, rgba(52,152,219,0) 100%);
-        opacity: 0.8;
-        transition: width 0.3s ease;
-    }
-
-    header h1:hover {
-        transform: translateY(-2px);
-        color: #2980b9;
-    }
-
-    header h1:hover::after {
-        width: 85%;
-    }
-
-    /* 适配苹果系统字体 */
-    @supports (font: -apple-system-body) {
-        header h1 {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        body {
+            font-family: 'SF Pro Display', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #d2dff3 0%, #aeb9cd 100%);
         }
-    }
-        
+
         header {
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 15px 25px;
             position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: calc(100% - 40px);
+            max-width: 1400px;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1;
+            border-radius: 20px;
+        }
+
+        header > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        header h1:hover {
+            transform: translateY(-2px);
+            color: #3498db;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
             justify-content: center;
+        }
+
+        /* 搜索框容器 */
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        #searchInput {
+            padding: 12px 45px 12px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            color: #2c3e50;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput::placeholder {
+            color: rgba(44, 62, 80, 0.6);
+        }
+
+        #searchInput:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        }
+
+        /* 清除搜索按钮 */
+        .clear-search {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: rgba(44, 62, 80, 0.6);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+
+        .clear-search:hover {
+            color: #2c3e50;
+            background: rgba(44, 62, 80, 0.1);
+        }
+
+        /* 数据源切换区域 */
+        .source-selector {
+            display: flex;
             gap: 10px;
-            height: 70px;
+            margin-left: 20px;
         }
 
-        /* 动画效果 */
-        @keyframes itemAppear {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+        .source-btn {
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-align: center;
+            min-width: 100px;
+            transform: scale(1);
         }
 
-        @keyframes itemRemove {
-            0% { opacity: 1; transform: translateX(0); }
-            100% { opacity: 0; transform: translateX(100%); }
+        .source-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .source-btn.active {
+            background: rgba(52, 152, 219, 0.5);
+            color: white;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Q弹动画效果 - 应用于所有按钮 */
+        .source-btn:active,
+        .filter-btn:active,
+        .size-btn:active,
+        .clear-btn:active,
+        .copy-btn:active,
+        .clear-search:active,
+        .cart-item button:active,
+        .export-btn:active {
+            transform: scale(0.92);
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* 产品网格样式 */
         .product-grid {
-            margin: 100px auto 150px;
+            margin: 120px auto 150px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
             max-width: 1400px;
             padding: 0 20px;
         }
 
         .product-card {
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(8px);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 1px solid rgba(255,255,255,0.3);
+            height: 100%;
+            min-height: 340px;
         }
 
+        /* 降低卡片悬浮高度 */
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .glass-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .glass-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            z-index: 1;
+            border-radius: 20px;
         }
 
         .product-image {
@@ -118,81 +241,137 @@
             height: 200px;
             object-fit: contain;
             border-radius: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            z-index: 2;
+            position: relative;
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .product-card h3 {
-            margin: 0;
-            font-size: 1em;
-            color: #34495e;
-            font-weight: 100;
+            margin: 0 0 12px 0;
+            font-size: 1.1em;
+            color: #2c3e50;
+            font-weight: 600;
             text-align: center;
             line-height: 1.4;
             padding: 0 10px;
-            cursor: pointer;  /* 新增指针样式 */
-            transition: color 0.2s;  /* 添加颜色过渡效果 */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            position: relative;
         }
+
         .product-card h3:hover {
-            color: #2980b9;  /* 悬停时改变颜色增强交互感 */
-       }
-        .size-btn:hover,
-        .filter-btn:hover,
-        .clear-btn:hover,
-        .copy-btn:hover {
+            color: #3498db;
             transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
         }
 
         .size-buttons {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-top: 15px;
+            margin-top: 12px;
             width: 100%;
+            z-index: 2;
+            position: relative;
         }
 
         .size-btn {
             flex: 1;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border: none;
-            border-radius: 8px;
-            background: #e8f4ff;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #2c3e50;
             cursor: pointer;
             min-width: 70px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transform: scale(1);
+            position: relative;
+            overflow: hidden;
         }
 
         .size-btn:hover {
-            background: #cce5ff;
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.05);
         }
 
+        /* 尺码按钮点击效果 - 优化动画 */
+        .size-btn.ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(52, 152, 219, 0.3);
+            border-radius: 12px;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple 0.8s ease-out forwards;
+            z-index: 1;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        /* 购物车面板 - 修复布局问题 */
         .cart-panel {
             position: fixed;
             right: 20px;
             bottom: 20px;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            width: 320px;
+            width: 350px;
             max-height: 60vh;
             display: none;
             flex-direction: column;
             z-index: 1001;
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: transform 0.3s ease;
+            border-radius: 20px;
+            overflow: hidden;
         }
 
-        /* 购物车列表优化 */
+        .cart-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+            padding: 25px 25px 0;
+        }
+
+        .cart-panel h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+            z-index: 2;
+        }
+
         #cartItems {
             overflow-y: auto;
-            scrollbar-width: none;
-            padding-right: 0;
             transition: max-height 0.4s ease-out, opacity 0.3s ease;
             opacity: 1;
+            flex: 1;
+            margin-bottom: 15px;
+            z-index: 2;
+            /* 确保按钮区域不会被覆盖 */
+            max-height: calc(60vh - 180px);
+            /* 隐藏滚动条 */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        #cartItems::-webkit-scrollbar {
+            display: none;
         }
 
         #cartItems.updating {
@@ -200,54 +379,134 @@
             transition: max-height 0.4s ease-out, opacity 0.2s ease;
         }
 
-        #cartItems::-webkit-scrollbar {
-            display: none;
+        .cart-buttons {
+            display: flex;
+            gap: 12px;
+            padding: 15px 25px;
+            flex-shrink: 0;
+            z-index: 2;
+            flex-wrap: wrap;
+            /* 确保按钮区域不会被覆盖 */
+            backdrop-filter: blur(10px);
+            margin-top: auto;
+            position: sticky;
+            bottom: 0;
         }
 
+        .clear-btn, .copy-btn, .export-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transform: scale(1);
+        }
+
+        .clear-btn {
+            background: rgba(255, 179, 186, 0.7);
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 154, 162, 0.8);
+            transform: scale(1.05);
+        }
+
+        .copy-btn {
+            background: rgba(179, 224, 204, 0.7);
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .copy-btn:hover {
+            background: rgba(155, 212, 188, 0.8);
+            transform: scale(1.05);
+        }
+
+        .export-btn {
+            background: rgba(179, 186, 224, 0.7);
+            color: #2c3e50;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .export-btn:hover {
+            background: rgba(155, 162, 212, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* 筛选栏 */
         .filter-bar {
             position: fixed;
             left: 50%;
             bottom: 20px;
             transform: translateX(-50%);
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(8px);
             padding: 15px 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 20px;
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
             max-width: 80%;
             justify-content: center;
             z-index: 999;
+            overflow: hidden;
+        }
+
+        .filter-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1;
+            border-radius: 20px;
+        }
+
+        .filter-bar > * {
+            position: relative;
+            z-index: 2;
         }
 
         .filter-btn {
             padding: 10px 20px;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 25px;
-            background: rgba(248,249,250,0.8);
+            background: rgba(255, 255, 255, 0.4);
+            color: #2c3e50;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             font-weight: 500;
+            backdrop-filter: blur(10px);
+            transform: scale(1);
         }
 
         .filter-btn.active {
-            background: #007bff;
+            background: rgba(52, 152, 219, 0.7);
             color: white;
-            border-color: transparent;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
         }
 
         .filter-btn:hover {
-            background: #e3f2fd !important;
+            background: rgba(208, 227, 255, 0.9);
+            transform: scale(1.05);
         }
 
+        /* 消息提示 */
         #message {
             position: fixed;
             bottom: 160px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
+            background: rgba(44, 62, 80, 0.9);
             color: white;
             padding: 12px 24px;
             border-radius: 30px;
@@ -256,255 +515,343 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
+            backdrop-filter: blur(10px);
         }
 
         #message.show {
             opacity: 1;
         }
 
-        .cart-buttons {
-            display: flex;
-            gap: 12px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            margin-top: auto;
-            flex-shrink: 0;
-        }
-
-        .clear-btn {
-            flex: 1;
-            padding: 12px;
-            background: #FFB3BA !important; /* 柔和的珊瑚粉 */
-            color: #6D454C !important; /* 深玫瑰色文字 */
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .clear-btn:hover {
-            background: #FF9AA2 !important; /* 稍深的珊瑚色 */
-            box-shadow: 0 2px 8px rgba(255,179,186,0.3);
-        }
-
-        .copy-btn {
-            flex: 2;
-            padding: 12px;
-            background: #B3E0CC !important; /* 浅薄荷绿 */
-            color: #3A6657 !important; /* 深青苔色文字 */
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .copy-btn:hover {
-            background: #9BD4BC !important; /* 稍深的薄荷色 */
-            box-shadow: 0 2px 8px rgba(179,224,204,0.3);
-        }
-
+        /* 购物车项目 */
         .cart-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            animation: itemAppear 0.3s ease-out;
-            transition: transform 0.3s ease;
+            border-bottom: 1px solid rgba(44, 62, 80, 0.1);
+            transition: all 0.3s ease;
         }
 
         .cart-item img {
             width: 50px;
             height: 50px;
             margin-right: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .cart-item button {
             padding: 8px 12px;
             font-size: 14px;
-            background: rgba(255,99,71,0.1);
-            border: 1px solid rgba(255,99,71,0.3);
+            background: rgba(255, 99, 71, 0.2);
+            border: 1px solid rgba(255, 99, 71, 0.3);
             border-radius: 6px;
             color: #ff6347;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            transform: scale(1);
         }
 
         .cart-item button:hover {
-            background: rgba(255,99,71,0.2);
-        }
-
-        .removing {
-            animation: itemRemove 0.3s ease-out forwards;
-        }
-
-        #searchInput {
-            margin-top: 7px;
-            padding: 12px 20px;
-            border-radius: 25px;
-            border: 1px solid rgba(0,0,0,0.1);
-            font-size: 1em;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(4px);
-        }
-        #dataSource {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(4px);
-            margin-left: 20px;
+            background: rgba(255, 99, 71, 0.3);
+            transform: scale(1.05);
         }
 
         /* 按钮状态样式 */
         .size-btn.soon {
-            background: #ffa500 !important;
-            color: white !important;
+            background: rgba(255, 165, 0, 0.3) !important;
+            color: rgba(44, 62, 80, 0.7) !important;
+            cursor: not-allowed;
         }
         
         .size-btn.sold-out {
-            background: #ff4444 !important;
-            color: white !important;
+            background: rgba(255, 68, 68, 0.3) !important;
+            color: rgba(44, 62, 80, 0.7) !important;
             cursor: not-allowed;
             opacity: 0.7;
         }
 
-        /* 数据源切换样式 */
-        .data-source-menu {
-            position: relative;
-        }
-
-        .data-source-options {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 8px;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        /* 图片预览弹窗 - 优化动画效果 */
+        .preview-modal {
             display: none;
-            min-width: 160px;
-            z-index: 1001;
-            right: 0;
-            left: auto;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(90deg); }
-        }
-
-        .data-source-options.show {
-            display: block;
-            animation: fadeIn 0.2s ease-out;
-        }
-
-        .data-source-option {
-            padding: 12px 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            transition: all 0.2s;
-            border-radius: 8px;
-            margin: 4px;
         }
 
-        .data-source-option:hover {
-            background: rgba(0,0,0,0.05);
+        .preview-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .preview-image {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transform: scale(0.8);
+            opacity: 0;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: 0.1s;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .data-source-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(4px);
-            cursor: pointer;
+        /* Q弹关闭动画 */
+        .preview-modal.closing .preview-image {
+            animation: popOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popOut {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            30% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
             display: flex;
-            align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-            padding: 8px;
-            margin-top: 7px;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2em;
+            color: #2c3e50;
         }
 
-        .data-source-btn:hover {
-            background: rgba(255,255,255,0.95);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transform: rotate(90deg);
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(52, 152, 219, 0.3);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
         }
 
-        .data-source-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #2c3e50;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            header {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+            }
+            
+            .header-controls {
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .source-selector {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            #searchInput {
+                min-width: 150px;
+                width: 100%;
+            }
+            
+            .cart-panel {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+            
+            .filter-bar {
+                max-width: 90%;
+            }
+            
+            .preview-image {
+                max-width: 95%;
+                max-height: 95%;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <h1 id="mainTitle">📦 柯南</h1>
-        <div class="data-source-menu">
-            <button class="data-source-btn" onclick="toggleDataSourceMenu()" aria-label="切换数据源">
-                <svg viewBox="0 0 24 24">
-                    <path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zM16 4v3.5l-4 4-4-4V4h8z"/>
-                </svg>
-            </button>
-            <div class="data-source-options" id="dataSourceOptions"></div>
+        <div class="header-controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="🔍 搜索...">
+                <button class="clear-search" id="clearSearch" style="display: none;">✕</button>
+            </div>
+            <div class="source-selector">
+                <button class="source-btn active" onclick="changeDataSource('kenan')">柯南</button>
+                <button class="source-btn" onclick="changeDataSource('xiaoming')">小明</button>
+            </div>
         </div>
-        <input type="text" id="searchInput" placeholder="🔍 搜索...">
     </header>
 
-    <div class="product-grid" id="productGrid"></div>
+    <div class="product-grid" id="productGrid">
+        <div class="loading">
+            <div class="spinner"></div>
+            <span>正在加载商品数据...</span>
+        </div>
+    </div>
 
     <div class="filter-bar" id="filterBar">
         <button class="filter-btn active" data-type="all">全部</button>
     </div>
 
     <div class="cart-panel">
-        <h3>📝 当前清单 (<span id="cartCount">0</span>)</h3>
-        <div id="cartItems"></div>
-        <div class="cart-buttons">
-            <button class="clear-btn" onclick="clearCart()">🗑️ 清空</button>
-            <button class="copy-btn" onclick="copyCart()">📋 复制清单</button>
+        <div class="glass-effect"></div>
+        <div class="cart-content">
+            <h3>📝 当前清单 (<span id="cartCount">0</span>)</h3>
+            <div id="cartItems"></div>
+            <div class="cart-buttons">
+                <button class="clear-btn" onclick="clearCart()">🗑️ 清空</button>
+                <button class="copy-btn" onclick="copyCart()">📋 复制清单</button>
+                <button class="export-btn" onclick="exportToImage()">🖼️ 导出图片</button>
+            </div>
         </div>
+    </div>
+
+    <!-- 图片预览弹窗 - 优化版本 -->
+    <div id="previewModal" class="preview-modal" onclick="closePreview()">
+        <img id="previewImage" class="preview-image" src="" alt="预览图片">
     </div>
 
     <div id="message"></div>
 
     <script>
+        // TXT数据源配置
+        const dataSources = {
+            'kenan': {
+                title: '📦 柯南',
+                link: 'https://docs.qq.com/sheet/DT0tsVExYc0xkc2dF?tab=BB08J2',
+                // 替换为实际的TXT文件URL
+                txtUrl: 'https://fanghuaall.github.io/kenan.txt'
+            },
+            'xiaoming': {
+                title: '🌟 小明',
+                link: 'edge://newtab/',
+                // 替换为实际的TXT文件URL
+                txtUrl: 'https://fanghuaall.github.io/xiaoming.txt'
+            }
+        };
+
+        // 备用数据 - 当网络请求失败时使用
+        const fallbackData = {
+            'kenan': [
+                "商品A_类型1_S.M.L.xxl",
+                "商品B_类型2_M",
+                "商品C_类型1_L",
+                "商品D_类型3_SML",
+                "商品E_类型2_S",
+                "商品F_类型1_M"
+            ],
+            'xiaoming': [
+                "商品X_类型A_SML",
+                "商品Y_类型B_M",
+                "商品Z_类型A_L",
+                "商品W_类型C_SML",
+                "商品V_类型B_S",
+                "商品U_类型A_M"
+            ]
+        };
+
         let sampleImages = [];
+        let currentDataSource = 'kenan';
+        let currentCanvas = null;
 
-async function loadProducts(source) {
-    try {
-        const response = await fetch(source); // 直接使用传入的source参数
-        const text = await response.text();
-        return text.split('\n')
-                  .map(line => line.trim())
-                  .filter(line => line.length > 0 && line.includes('_')); // 增加有效性校验
-    } catch (error) {
-        console.error('加载商品数据失败:', error);
-        showMessage('❌ 无法加载商品数据');
-        return [];
-    }
-}
+        // 从TXT文件获取商品数据
+        async function loadProducts(source) {
+            showMessage('🔄 正在加载商品数据...');
+            
+            try {
+                // 使用fetch API从网络获取TXT文件
+                const response = await fetch(dataSources[source].txtUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    }
+                });
 
+                if (!response.ok) {
+                    throw new Error(`网络请求失败: ${response.status} ${response.statusText}`);
+                }
+
+                const textData = await response.text();
+                
+                // 解析TXT文件内容 - 按行分割并过滤空行
+                const lines = textData.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0 && !line.startsWith('#')); // 过滤空行和注释行
+                
+                if (lines.length > 0) {
+                    showMessage('✅ 数据加载成功');
+                    return lines;
+                } else {
+                    throw new Error('TXT文件为空或格式不正确');
+                }
+            } catch (error) {
+                console.error('从TXT文件加载数据失败:', error);
+                showMessage('⚠️ 使用备用数据');
+                
+                // 使用备用数据
+                return fallbackData[source] || [];
+            }
+        }
+
+        // 解析文件名
         function parseFileName(fileName) {
             const [name, type, sizes] = fileName.split('_');
             return { 
                 name, 
                 type,
-                sizes: sizes.split('.').map(s => s.replace(/-.*/, '')), // 移除尺寸后缀
+                sizes: sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'],
+                // 假设图片URL基于商品名称
                 image: 'img/' + name + '.jpg'
             };
         }
 
+        // 创建筛选按钮
         function createFilterButtons() {
             const types = [...new Set(sampleImages.map(f => parseFileName(f).type))];
             const filterBar = document.getElementById('filterBar');
@@ -518,6 +865,7 @@ async function loadProducts(source) {
             });
         }
 
+        // 筛选产品
         function filterProducts(typeFilter) {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             document.querySelectorAll('.product-card').forEach(card => {
@@ -528,6 +876,7 @@ async function loadProducts(source) {
             });
         }
 
+        // 初始化筛选按钮
         function initFilterButtons() {
             document.getElementById('filterBar').addEventListener('click', (e) => {
                 if (e.target.classList.contains('filter-btn')) {
@@ -538,37 +887,47 @@ async function loadProducts(source) {
             });
         }
 
+        // 渲染产品
         function renderProducts() {
             const grid = document.getElementById('productGrid');
+            
+            if (sampleImages.length === 0) {
+                grid.innerHTML = '<div class="loading"><div class="spinner"></div><span>暂无商品数据</span></div>';
+                return;
+            }
+            
             grid.innerHTML = sampleImages.map(fileName => {
                 const product = parseFileName(fileName);
                 return `
                     <div class="product-card" data-type="${product.type}">
-                        <img class="product-image" 
-                             src="${product.image}" 
-                             alt="${product.name}"
-                             onerror="this.onerror=null;this.src='sosad.jpg';">
-                        <h3 class="copyable-name">${product.name}</h3>  <!-- 添加class -->
-                        <div class="size-buttons">
-                            ${product.sizes.map(size => {
-                                const status = getSizeStatus(size);
-                                return `
-                                    <button class="size-btn ${status.class}" 
-                                        ${status.disabled ? 'disabled' : ''}
-                                        ${status.disabled ? '' : `onclick="addToCart('${product.name}', '${size}', '${product.image}', event)"`}>
-                                        ${size.replace(/-(即将上架|下架)/, '')}
-                                    </button>
-                                `;
-                            }).join('')}
+                        <div class="glass-effect"></div>
+                        <div class="glass-content">
+                            <img class="product-image" 
+                                 src="${product.image}" 
+                                 alt="${product.name}"
+                                 onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuNSkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj4k{e3Byb2R1Y3QubmFtZX08L3RleHQ+PC9zdmc+';">
+                            <h3 class="copyable-name">${product.name}</h3>
+                            <div class="size-buttons">
+                                ${product.sizes.map(size => {
+                                    const status = getSizeStatus(size);
+                                    return `
+                                        <button class="size-btn ${status.class}" 
+                                            ${status.disabled ? 'disabled' : ''}
+                                            ${status.disabled ? '' : `onclick="addToCartWithAnimation(this, '${product.name}', '${size}', '${product.image}')"`}>
+                                            ${size.replace(/-(即将上架|下架)/, '')}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
                     </div>
                 `;
             }).join('');
-         // 新增事件监听
-         document.querySelectorAll('.copyable-name').forEach(nameElement => {
+            
+            // 商品名称点击复制功能
+            document.querySelectorAll('.copyable-name').forEach(nameElement => {
                 nameElement.addEventListener('click', function(e) {
                     copyToClipboard(this.textContent);
-                    // 添加点击反馈动画
                     this.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         this.style.transform = '';
@@ -577,7 +936,7 @@ async function loadProducts(source) {
             });
         }
         
-        // 新增复制函数
+        // 复制函数
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 showMessage(`✅ 已复制：${text}`);
@@ -587,6 +946,7 @@ async function loadProducts(source) {
             });
         }
         
+        // 获取尺码状态
         function getSizeStatus(size) {
             if (size.includes('即将上架')) {
                 return { class: 'soon', disabled: true };
@@ -599,36 +959,46 @@ async function loadProducts(source) {
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+        // 优化：使用更流畅的动画效果
         function smoothHeightTransition(callback) {
             const cartItems = document.getElementById('cartItems');
-            const startHeight = cartItems.scrollHeight;
+            const cartPanel = document.querySelector('.cart-panel');
             
+            // 添加更新类以应用过渡效果
             cartItems.classList.add('updating');
-            cartItems.style.maxHeight = `${startHeight}px`;
             
             requestAnimationFrame(() => {
                 callback();
                 
-                const endHeight = cartItems.scrollHeight;
-                cartItems.style.maxHeight = `${endHeight}px`;
-                
-                setTimeout(() => {
-                    cartItems.style.maxHeight = '';
-                    cartItems.classList.remove('updating');
-                }, 400);
+                // 使用requestAnimationFrame确保DOM更新完成
+                requestAnimationFrame(() => {
+                    // 恢复滚动和高度
+                    setTimeout(() => {
+                        cartItems.classList.remove('updating');
+                    }, 300);
+                });
             });
         }
 
-        function addToCart(name, size, image, event) {
+        // 添加购物车并触发动画
+        function addToCartWithAnimation(button, name, size, image) {
             if (size.includes('即将上架') || size.includes('下架')) {
-                showMessage('⛔ 该商品暂不可选');
                 return;
             }
+            
+            // 添加涟漪动画类
+            button.classList.add('ripple');
+            
+            // 动画结束后移除类
+            setTimeout(() => {
+                button.classList.remove('ripple');
+            }, 800);
+            
+            // 添加购物车项
             cart.push({ name, size, image });
             
             smoothHeightTransition(() => {
                 updateCart();
-                showMessage(`✅ 已添加：${name} (${size})`);
                 
                 setTimeout(() => {
                     const cartItems = document.getElementById('cartItems');
@@ -636,44 +1006,47 @@ async function loadProducts(source) {
                         top: cartItems.scrollHeight,
                         behavior: 'smooth'
                     });
-                }, 450);
+                }, 300);
             });
         }
 
+        // 更新购物车
         function updateCart() {
             const cartItems = document.getElementById('cartItems');
             const prevScrollTop = cartItems.scrollTop;
             
             cartItems.innerHTML = cart.map((item, index) => `
-                <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}">
+                <div class="cart-item" style="animation: fadeIn 0.3s ease-out;">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+JHtpdGVtLm5hbWV9PC90ZXh0Pjwvc3ZnPg=='">
                     <div class="item-info">
-                        <div style="font-weight:500;">${item.name}</div>
-                        <div style="color:#666;font-size:0.9em;">尺码：${item.size}</div>
+                        <div style="font-weight:500;color:#2c3e50;">${item.name}</div>
+                        <div style="color:rgba(44,62,80,0.7);font-size:0.9em;">尺码：${item.size}</div>
                     </div>
                     <button onclick="removeFromCart(${index})">删除</button>
                 </div>
             `).join('');
             
+            // 恢复滚动位置
             cartItems.scrollTop = prevScrollTop;
             document.getElementById('cartCount').textContent = cart.length;
             localStorage.setItem('cart', JSON.stringify(cart));
             document.querySelector('.cart-panel').style.display = cart.length ? 'flex' : 'none';
         }
 
+        // 从购物车移除商品
         function removeFromCart(index) {
             const cartItem = document.querySelectorAll('.cart-item')[index];
-            cartItem.classList.add('removing');
+            cartItem.style.animation = 'fadeOut 0.3s ease-out forwards';
             
             setTimeout(() => {
                 smoothHeightTransition(() => {
                     cart.splice(index, 1);
                     updateCart();
-                    showMessage('🗑️ 已移除商品');
                 });
             }, 300);
         }
 
+        // 清空购物车
         function clearCart() {
             const cartPanel = document.querySelector('.cart-panel');
             cartPanel.style.animation = 'panelFadeOut 0.3s ease-out';
@@ -681,10 +1054,10 @@ async function loadProducts(source) {
                 cart = [];
                 updateCart();
                 cartPanel.style.animation = '';
-                showMessage('🔄 已清空清单');
             }, 300);
         }
 
+        // 复制购物车
         function copyCart() {
             const text = cart.map(item => `${item.name} - ${item.size}`).join('\n');
             navigator.clipboard.writeText(text).then(() => {
@@ -692,6 +1065,211 @@ async function loadProducts(source) {
             });
         }
 
+        // 根据用户提供的具体规则计算最佳列数
+        function calculateOptimalColumns(itemCount) {
+            // 根据用户提供的具体规则
+            switch(itemCount) {
+                case 1: return 1;  // 1列1行
+                case 2: return 2;  // 2列1行
+                case 3: return 3;  // 3列1行
+                case 4: return 2;  // 2列2行
+                case 5: return 5;  // 5列1行
+                case 6: return 3;  // 3列2行
+                case 7: return 4;  // 4列2行（第一行4个，第二行3个）
+                case 8: return 4;  // 4列2行（每行4个）
+                case 9: return 3;  // 3列3行
+                case 10: return 5; // 5列2行
+                case 11: return 4; // 4列3行（第一行4个，第二行4个，第三行3个）
+                case 12: return 4; // 4列3行（每行4个）
+                case 13: return 5; // 5列3行（第一行5个，第二行5个，第三行3个）
+                case 14: return 5; // 5列3行（第一行5个，第二行5个，第三行4个）
+                case 15: return 5; // 5列3行（每行5个）
+                case 16: return 4; // 4列4行
+                default: 
+                    // 对于更多商品，使用更智能的算法
+                    if (itemCount <= 20) return 5; // 最多5列
+                    return 5; // 默认5列
+            }
+        }
+
+        // 导出为图片功能 - 显示预览
+        async function exportToImage() {
+            if (cart.length === 0) {
+                showMessage('❌ 购物车为空，无法导出');
+                return;
+            }
+
+            showMessage('🔄 正在生成图片...');
+
+            // 创建画布
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置画布尺寸 - 根据实际卡片数量计算
+            const cardWidth = 240;
+            const cardHeight = 300;
+            const padding = 25;
+            
+            // 使用智能算法计算最佳列数
+            const cardsPerRow = calculateOptimalColumns(cart.length);
+            const rows = Math.ceil(cart.length / cardsPerRow);
+            
+            canvas.width = cardsPerRow * cardWidth + (cardsPerRow + 1) * padding;
+            canvas.height = rows * cardHeight + (rows + 1) * padding;
+            
+            // 设置背景 - 使用浅色渐变背景
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#f5f7fa');
+            gradient.addColorStop(1, '#c3cfe2');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制每个卡片
+            let cardIndex = 0;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cardsPerRow; col++) {
+                    if (cardIndex >= cart.length) break;
+                    
+                    const item = cart[cardIndex];
+                    const x = col * cardWidth + (col + 1) * padding;
+                    const y = row * cardHeight + (row + 1) * padding;
+                    
+                    // 绘制卡片背景（玻璃效果）
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, cardWidth, cardHeight, 20);
+                    ctx.fill();
+                    
+                    // 绘制边框
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // 绘制商品图片区域
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.fillRect(x + 25, y + 25, cardWidth - 50, 140);
+                    
+                    // 绘制商品名称
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.name, x + cardWidth/2, y + 190);
+                    
+                    // 绘制尺码按钮
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.roundRect(x + 25, y + 210, cardWidth - 50, 35, 10);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.size, x + cardWidth/2, y + 232);
+                    
+                    cardIndex++;
+                }
+            }
+            
+            // 保存canvas用于后续复制
+            currentCanvas = canvas;
+            
+            // 将Canvas转换为DataURL并显示预览
+            const dataURL = canvas.toDataURL('image/png');
+            document.getElementById('previewImage').src = dataURL;
+            document.getElementById('previewModal').classList.add('show');
+        }
+
+        // 复制图片到剪贴板
+        async function copyImageToClipboard() {
+            if (!currentCanvas) {
+                showMessage('❌ 没有可复制的图片');
+                return;
+            }
+
+            try {
+                // 方法1: 使用现代Clipboard API
+                if (navigator.clipboard && navigator.clipboard.write) {
+                    currentCanvas.toBlob(async (blob) => {
+                        try {
+                            await navigator.clipboard.write([
+                                new ClipboardItem({ 'image/png': blob })
+                            ]);
+                            showMessage('✅ 图片已成功复制到剪贴板！');
+                            closePreview(); // 复制后关闭预览
+                        } catch (err) {
+                            console.error('复制失败:', err);
+                            fallbackCopyImage();
+                        }
+                    });
+                } else {
+                    // 方法2: 使用传统方法
+                    fallbackCopyImage();
+                }
+            } catch (err) {
+                console.error('复制失败:', err);
+                showMessage('❌ 复制失败，请使用浏览器右键菜单复制图片');
+            }
+        }
+
+        // 备用复制方法
+        function fallbackCopyImage() {
+            // 创建一个临时img元素
+            const img = document.createElement('img');
+            img.src = currentCanvas.toDataURL('image/png');
+            
+            // 创建一个临时div来包含图片
+            const container = document.createElement('div');
+            container.appendChild(img);
+            document.body.appendChild(container);
+            
+            // 选中图片
+            const range = document.createRange();
+            range.selectNode(img);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            try {
+                // 尝试复制
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showMessage('✅ 图片已成功复制到剪贴板！');
+                    closePreview(); // 复制后关闭预览
+                } else {
+                    throw new Error('复制命令执行失败');
+                }
+            } catch (err) {
+                console.error('备用复制方法失败:', err);
+                showMessage('❌ 复制失败，请右键图片选择"复制图片"');
+            }
+            
+            // 清理
+            selection.removeAllRanges();
+            document.body.removeChild(container);
+        }
+
+        // 关闭预览 - 添加Q弹动画
+        function closePreview() {
+            const previewModal = document.getElementById('previewModal');
+            const previewImage = document.getElementById('previewImage');
+            
+            // 添加关闭动画类
+            previewModal.classList.add('closing');
+            
+            // 等待动画完成后再隐藏模态框
+            setTimeout(() => {
+                previewModal.style.display = 'none';
+                previewModal.classList.remove('closing');
+                previewModal.classList.remove('show');
+            }, 400); // 动画持续时间
+        }
+
+        // 显示消息
         function showMessage(text) {
             const msg = document.getElementById('message');
             msg.textContent = text;
@@ -702,97 +1280,132 @@ async function loadProducts(source) {
             }, 1500);
         }
 
+        // 处理搜索
         function handleSearch() {
             const allButton = document.querySelector('.filter-btn[data-type="all"]');
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             allButton.classList.add('active');
             filterProducts('all');
-        }
-
-        // 数据源配置
-        const dataSources = {
-            'https://fanghuaall.github.io/kenan.txt': {
-                title: '📦 柯南',
-                link: 'https://docs.qq.com/sheet/DT0tsVExYc0xkc2dF?tab=BB08J2'
-            },
-            'https://fanghuaall.github.io/xiaoming.txt': {
-                title: '🌟 小明',
-                link: 'edge://newtab/'
-            }
-        };
-
-        // 初始化数据源菜单
-        function initDataSourceMenu() {
-            const optionsContainer = document.getElementById('dataSourceOptions');
-            optionsContainer.innerHTML = Object.entries(dataSources).map(([source, config]) => `
-                <div class="data-source-option" 
-                     onclick="changeDataSource('${source}')"
-                     data-source="${source}">
-                    ${config.title}
-                </div>
-            `).join('');
-        }
-
-        // 切换数据源菜单显示
-        function toggleDataSourceMenu() {
-            const options = document.getElementById('dataSourceOptions');
-            const btn = document.querySelector('.data-source-btn');
             
-            options.classList.toggle('show');
-            btn.classList.toggle('rotated'); // 通过CSS类控制旋转
+            // 根据搜索框内容显示/隐藏清除按钮
+            const searchInput = document.getElementById('searchInput');
+            const clearButton = document.getElementById('clearSearch');
+            clearButton.style.display = searchInput.value ? 'flex' : 'none';
         }
 
-        // 关闭数据源菜单（点击外部时）
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.data-source-menu')) {
-                document.getElementById('dataSourceOptions').classList.remove('show');
+        // 清除搜索框内容
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            searchInput.focus();
+            handleSearch();
+        }
+
+        // 数据源切换函数
+        function changeDataSource(source) {
+            // 更新按钮状态
+            document.querySelectorAll('.source-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.source-btn[onclick="changeDataSource('${source}')"]`).classList.add('active');
+            
+            // 更新当前数据源
+            currentDataSource = source;
+            
+            // 刷新数据
+            initApp().catch(() => {
+                showMessage('⚠️ 数据加载失败');
+            });
+        }
+
+        // 初始化应用
+        async function initApp() {
+            try {
+                // 显示加载状态
+                const grid = document.getElementById('productGrid');
+                grid.innerHTML = '<div class="loading"><div class="spinner"></div><span>正在加载商品数据...</span></div>';
+                
+                // 从网络加载数据
+                sampleImages = await loadProducts(currentDataSource);
+                
+                // 渲染界面
+                createFilterButtons();
+                renderProducts();
+                initFilterButtons(); 
+                cart = [];  
+                updateCart();
+                
+                // 更新标题和链接
+                const config = dataSources[currentDataSource];
+                if (config) {
+                    const titleElement = document.getElementById('mainTitle');
+                    titleElement.textContent = config.title;
+                    titleElement.onclick = () => window.open(config.link, '_blank');
+                }
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showMessage('❌ 数据加载失败');
+                
+                // 显示错误状态
+                const grid = document.getElementById('productGrid');
+                grid.innerHTML = '<div class="loading"><span>❌ 数据加载失败，请检查网络连接</span></div>';
             }
-        });
+        }
 
-async function initApp(dataSource = 'kenan.txt') {
-    try {
-        sampleImages = await loadProducts(dataSource); // 加载新数据源
-        createFilterButtons(); // 先创建过滤器
-        renderProducts();      // 再渲染商品
-        initFilterButtons(); 
-        cart = [];  
-        updateCart();
-        initDataSourceMenu();
-        showMessage(`✅ 已切换至：${dataSources[dataSource].title}`);
-    } catch (error) {
-        console.error('初始化失败:', error);
-        showMessage('❌ 数据加载失败，请检查数据源');
-    }
-}
-
-        // 新增数据源切换函数
-function changeDataSource(source) {
-    const config = dataSources[source];
-    if (!config) return;
-
-    // 更新标题和链接
-    const titleElement = document.getElementById('mainTitle');
-    titleElement.textContent = config.title;
-    titleElement.onclick = () => window.open(config.link, '_blank');
-
-    // 关闭菜单并重置按钮状态
-    const options = document.getElementById('dataSourceOptions');
-    const btn = document.querySelector('.data-source-btn');
-    options.classList.remove('show');
-    btn.classList.remove('rotated');
-    
-    // 刷新数据（使用改造后的initApp）
-    initApp(source).catch(() => {
-        showMessage('⚠️ 正在恢复默认数据源...');
-        initApp('kenan.txt'); // 失败时自动恢复默认
-    });
-}
-
+        // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
+            
+            // 搜索框事件监听
             const searchInput = document.getElementById('searchInput');
+            const clearButton = document.getElementById('clearSearch');
+            
             searchInput.addEventListener('input', handleSearch);
             searchInput.addEventListener('focus', handleSearch);
+            
+            // 清除按钮事件监听
+            clearButton.addEventListener('click', clearSearch);
+            
+            // 预览图片点击复制
+            document.getElementById('previewImage').addEventListener('click', function(e) {
+                e.stopPropagation(); // 防止事件冒泡到模态框
+                copyImageToClipboard();
+            });
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    0% { opacity: 0; transform: translateY(10px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes fadeOut {
+                    0% { opacity: 1; transform: translateX(0); }
+                    100% { opacity: 0; transform: translateX(100%); }
+                }
+                
+                @keyframes panelFadeOut {
+                    0% { opacity: 1; transform: scale(1); }
+                    100% { opacity: 0; transform: scale(0.9); }
+                }
+                
+                @keyframes ripple {
+                    0% {
+                        transform: translate(-50%, -50%) scale(0);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) scale(2.5);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>
