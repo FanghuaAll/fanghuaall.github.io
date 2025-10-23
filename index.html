@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>报货</title>
     <style>
+        /* 样式保持不变，与您提供的代码相同 */
         * {
             margin: 0;
             padding: 0;
@@ -1135,7 +1136,7 @@
             });
         }
 
-        // 导出为图片功能 - 优化版本，大幅提升生成速度
+        // 导出为图片功能 - 修复版本，解决多次导出失败问题
         async function exportToImage() {
             if (isExporting) {
                 showMessage('🔄 正在生成图片，请稍候...');
@@ -1334,6 +1335,7 @@
                 // 隐藏进度条
                 progressBar.style.display = 'none';
             } finally {
+                // 确保导出状态被重置
                 isExporting = false;
             }
         }
@@ -1490,6 +1492,9 @@
                 previewModal.style.display = 'none';
                 previewModal.classList.remove('closing');
                 previewModal.classList.remove('show');
+                
+                // 重置画布引用，确保下次导出使用新的画布
+                currentCanvas = null;
             }, 400); // 动画持续时间
         }
 
@@ -1640,4 +1645,3 @@
     </script>
 </body>
 </html>
-
