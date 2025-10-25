@@ -229,15 +229,83 @@
             border-radius: 20px;
         }
 
-        .product-image {
+        .product-image-container {
             width: 100%;
             height: 210px;
-            object-fit: contain;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            z-index: 2;
             position: relative;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            overflow: hidden;
             background: rgba(255, 255, 255, 0.5);
+            z-index: 2;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .product-image.loaded {
+            opacity: 1;
+        }
+
+        .product-image.error {
+            opacity: 0;
+        }
+
+        .image-skeleton {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.4) 25%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                rgba(255, 255, 255, 0.4) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 12px;
+        }
+
+        .image-error {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.3);
+            color: rgba(44, 62, 80, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .image-error i {
+            font-size: 2em;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .image-error span {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         .product-card h3 {
@@ -550,8 +618,8 @@
         }
 
         .size-btn.soon {
-            background: rgba(255, 165, 0, 0.3) !important;
-            color: rgba(44, 62, 80, 0.7) !important;
+            background: rgba(255, 165, 0, 0.5) !important;
+            color: rgba(44, 62, 80, 0.9) !important;
             cursor: not-allowed;
         }
         
@@ -830,13 +898,24 @@
             }
         }
 
-        // 解析文件名
+        // 解析文件名 - 修改此函数来处理没有尺码信息的情况
         function parseFileName(fileName) {
             const [name, type, sizes] = fileName.split('_');
+            
+            // 检查是否有尺码信息
+            let sizeArray;
+            if (!sizes || sizes.trim() === '') {
+                // 如果没有尺码信息，设置为"即将上架"
+                sizeArray = ['即将上架'];
+            } else {
+                // 有尺码信息，正常解析
+                sizeArray = sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'];
+            }
+            
             return { 
                 name, 
                 type,
-                sizes: sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'],
+                sizes: sizeArray,
                 image: 'https://fanghuaall.github.io/img/' + name + '.jpg'
             };
         }
@@ -877,7 +956,75 @@
             });
         }
 
-        // 渲染产品
+        // 优化图片加载函数
+        function loadProductImage(imgElement, src, productName) {
+            return new Promise((resolve) => {
+                const container = imgElement.parentElement;
+                const skeleton = container.querySelector('.image-skeleton');
+                const errorDisplay = container.querySelector('.image-error');
+                
+                // 显示骨架屏
+                skeleton.style.display = 'block';
+                errorDisplay.style.display = 'none';
+                imgElement.classList.remove('loaded', 'error');
+                
+                // 首先检查缓存
+                if (imageCache.has(src)) {
+                    const cachedImg = imageCache.get(src);
+                    imgElement.src = cachedImg.src;
+                    imgElement.classList.add('loaded');
+                    skeleton.style.display = 'none';
+                    resolve(true);
+                    return;
+                }
+                
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                
+                let loaded = false;
+                const timeout = setTimeout(() => {
+                    if (!loaded) {
+                        handleImageError();
+                    }
+                }, 8000); // 8秒超时
+                
+                img.onload = () => {
+                    loaded = true;
+                    clearTimeout(timeout);
+                    
+                    // 缓存图片
+                    imageCache.set(src, img);
+                    
+                    // 淡入图片
+                    imgElement.src = src;
+                    imgElement.classList.add('loaded');
+                    skeleton.style.display = 'none';
+                    
+                    resolve(true);
+                };
+                
+                img.onerror = () => {
+                    loaded = true;
+                    clearTimeout(timeout);
+                    handleImageError();
+                    resolve(false);
+                };
+                
+                function handleImageError() {
+                    imgElement.classList.add('error');
+                    skeleton.style.display = 'none';
+                    errorDisplay.style.display = 'flex';
+                    errorDisplay.querySelector('span').textContent = productName;
+                }
+                
+                // 添加时间戳避免缓存问题
+                const timestamp = new Date().getTime();
+                const url = src.includes('?') ? `${src}&t=${timestamp}` : `${src}?t=${timestamp}`;
+                img.src = url;
+            });
+        }
+
+        // 渲染产品 - 修改此函数来处理没有尺码信息的情况
         function renderProducts() {
             const grid = document.getElementById('productGrid');
             
@@ -892,10 +1039,18 @@
                     <div class="product-card" data-type="${product.type}">
                         <div class="glass-effect"></div>
                         <div class="glass-content">
-                            <img class="product-image" 
-                                 src="${product.image}" 
-                                 alt="${product.name}"
-                                 onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuNSkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj4k{e3Byb2R1Y3QubmFtZX08L3RleHQ+PC9zdmc+';">
+                            <div class="product-image-container">
+                                <img class="product-image" 
+                                     src="" 
+                                     alt="${product.name}"
+                                     data-src="${product.image}"
+                                     data-name="${product.name}">
+                                <div class="image-skeleton"></div>
+                                <div class="image-error" style="display: none;">
+                                    <i>📷</i>
+                                    <span>${product.name}</span>
+                                </div>
+                            </div>
                             <h3 class="copyable-name">${product.name}</h3>
                             <div class="size-buttons">
                                 ${product.sizes.map(size => {
@@ -924,6 +1079,36 @@
                     }, 200);
                 });
             });
+            
+            // 批量加载图片 - 使用Intersection Observer实现懒加载
+            initLazyLoading();
+        }
+        
+        // 初始化懒加载
+        function initLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.dataset.src;
+                        const name = img.dataset.name;
+                        
+                        loadProductImage(img, src, name).then(success => {
+                            if (success) {
+                                observer.unobserve(img);
+                            }
+                        });
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px', // 提前50px开始加载
+                threshold: 0.1
+            });
+            
+            // 观察所有图片元素
+            document.querySelectorAll('.product-image').forEach(img => {
+                imageObserver.observe(img);
+            });
         }
         
         // 复制函数
@@ -936,8 +1121,11 @@
             });
         }
         
-        // 获取尺码状态
+        // 获取尺码状态 - 修改此函数来处理"即将上架"状态
         function getSizeStatus(size) {
+            if (size === '即将上架') {
+                return { class: 'soon', disabled: true };
+            }
             if (size.includes('即将上架')) {
                 return { class: 'soon', disabled: true };
             }
@@ -1222,7 +1410,7 @@
                         
                         // 商品名称
                         ctx.fillStyle = '#2c3e50';
-                        ctx.font = 'bold 14px Arial';
+                        ctx.font = 'bold 15px Arial';
                         ctx.textAlign = 'center';
                         
                         // 名称过长时截断
@@ -1246,8 +1434,8 @@
                         ctx.stroke();
                         
                         ctx.fillStyle = '#2c3e50';
-                        ctx.font = 'bold 14px Arial';
-                        ctx.fillText(item.size, x + cardWidth/2, y + 282);
+                        ctx.font = 'bold 18px Arial';
+                        ctx.fillText(item.size, x + cardWidth/2, y + 283);
                         
                         cardIndex++;
                         
@@ -1317,7 +1505,7 @@
                 const timeout = setTimeout(() => {
                     console.warn(`图片加载超时: ${src}`);
                     resolve(null);
-                }, 3000);
+                }, 5000);
                 
                 img.onload = () => {
                     clearTimeout(timeout);
