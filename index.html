@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>报货</title>
     <style>
-        /* 样式保持不变，与您提供的代码相同 */
         * {
             margin: 0;
             padding: 0;
@@ -38,7 +37,7 @@
             z-index: 1000;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             gap: 15px;
         }
 
@@ -68,6 +67,7 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             margin: 0;
+            white-space: nowrap;
         }
 
         header h1:hover {
@@ -328,6 +328,14 @@
             z-index: 1001;
             border-radius: 20px;
             overflow: hidden;
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .cart-panel.hiding {
+            opacity: 0;
+            transform: scale(0.9);
         }
 
         .cart-content {
@@ -375,7 +383,6 @@
             flex-shrink: 0;
             z-index: 2;
             flex-wrap: wrap;
-            backdrop-filter: blur(10px);
             margin-top: auto;
             position: sticky;
             bottom: 0;
@@ -629,9 +636,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 200px;
+            height: 100vh;
             font-size: 1.2em;
             color: #2c3e50;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
         }
 
         .spinner {
@@ -649,13 +661,14 @@
         }
 
         .progress-bar {
-            width: 100%;
+            width: calc(100% - 50px);
             height: 6px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 3px;
-            margin: 10px 0;
+            margin: 0 25px 15px 25px;
             overflow: hidden;
             display: none;
+            z-index: 2;
         }
 
         .progress-fill {
@@ -774,47 +787,14 @@
             }
         };
 
-        // 备用数据
-        const fallbackData = {
-            'kenan': [
-                "商品A_类型1_S.M.L.xxl",
-                "商品B_类型2_M",
-                "商品C_类型1_L",
-                "商品D_类型3_SML",
-                "商品E_类型2_S",
-                "商品F_类型1_M"
-            ],
-            'xiaoming': [
-                "商品X_类型A_SML",
-                "商品Y_类型B_M",
-                "商品Z_类型A_L",
-                "商品W_类型C_SML",
-                "商品V_类型B_S",
-                "商品U_类型A_M"
-            ]
-        };
-
         let sampleImages = [];
         let currentDataSource = 'kenan';
-        let currentCanvas = null;
         let isExporting = false;
+        let currentCanvas = null;
         
         // 图片缓存 - 加速图片加载
         const imageCache = new Map();
         
-        // 预加载图片 - 提前加载购物车中的图片
-        function preloadCartImages() {
-            if (cart.length === 0) return;
-            
-            cart.forEach(item => {
-                if (!imageCache.has(item.image)) {
-                    loadImageWithFallback(item.image).then(img => {
-                        if (img) imageCache.set(item.image, img);
-                    });
-                }
-            });
-        }
-
         // 从TXT文件获取商品数据
         async function loadProducts(source) {
             showMessage('🔄 正在加载商品数据...');
@@ -845,9 +825,8 @@
                 }
             } catch (error) {
                 console.error('从TXT文件加载数据失败:', error);
-                showMessage('⚠️ 使用备用数据');
-                
-                return fallbackData[source] || [];
+                showMessage('❌ 数据加载失败，请检查网络连接');
+                return [];
             }
         }
 
@@ -858,7 +837,7 @@
                 name, 
                 type,
                 sizes: sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'],
-                image: 'img/' + name + '.jpg'
+                image: 'https://fanghuaall.github.io/img/' + name + '.jpg'
             };
         }
 
@@ -1048,7 +1027,18 @@
             cartItems.scrollTop = prevScrollTop;
             document.getElementById('cartCount').textContent = cart.length;
             localStorage.setItem('cart', JSON.stringify(cart));
-            document.querySelector('.cart-panel').style.display = cart.length ? 'flex' : 'none';
+            
+            // 如果购物车为空，使用动画隐藏面板
+            if (cart.length === 0) {
+                const cartPanel = document.querySelector('.cart-panel');
+                cartPanel.classList.add('hiding');
+                setTimeout(() => {
+                    cartPanel.style.display = 'none';
+                    cartPanel.classList.remove('hiding');
+                }, 300);
+            } else {
+                document.querySelector('.cart-panel').style.display = 'flex';
+            }
         }
 
         // 从购物车移除商品
@@ -1067,11 +1057,10 @@
         // 清空购物车
         function clearCart() {
             const cartPanel = document.querySelector('.cart-panel');
-            cartPanel.style.animation = 'panelFadeOut 0.3s ease-out';
+            cartPanel.classList.add('hiding');
             setTimeout(() => {
                 cart = [];
                 updateCart();
-                cartPanel.style.animation = '';
             }, 300);
         }
 
@@ -1108,35 +1097,7 @@
             }
         }
 
-        // 改进的图片加载函数
-        function loadImage(src) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                
-                // 设置超时机制
-                const timeout = setTimeout(() => {
-                    reject(new Error(`图片加载超时: ${src}`));
-                }, 8000);
-                
-                img.onload = () => {
-                    clearTimeout(timeout);
-                    resolve(img);
-                };
-                
-                img.onerror = () => {
-                    clearTimeout(timeout);
-                    reject(new Error(`无法加载图片: ${src}`));
-                };
-                
-                // 避免缓存问题
-                const timestamp = new Date().getTime();
-                const url = src.includes('?') ? `${src}&t=${timestamp}` : `${src}?t=${timestamp}`;
-                img.src = url;
-            });
-        }
-
-        // 导出为图片功能 - 修复版本，解决多次导出失败问题
+        // 导出为图片功能
         async function exportToImage() {
             if (isExporting) {
                 showMessage('🔄 正在生成图片，请稍候...');
@@ -1158,7 +1119,7 @@
             progressFill.style.width = '0%';
 
             try {
-                // 创建新的画布，避免复用问题
+                // 创建新的画布，确保每次都是重新生成
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
@@ -1181,7 +1142,7 @@
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // 批量加载图片 - 大幅优化加载速度
+                // 批量加载图片
                 const imageLoadPromises = [];
                 const imageMap = new Map();
                 
@@ -1209,13 +1170,13 @@
                     await Promise.all(imageLoadPromises);
                 }
                 
-                // 绘制所有卡片 - 使用分块绘制避免阻塞
+                // 绘制所有卡片
                 let cardIndex = 0;
                 let loadedImagesCount = 0;
                 const totalImages = cart.length;
                 
-                // 分块绘制 - 大幅提升绘制性能
-                const chunkSize = Math.max(1, Math.floor(cart.length / 10)); // 分成10块
+                // 分块绘制 - 提升绘制性能
+                const chunkSize = Math.max(1, Math.floor(cart.length / 10));
                 
                 for (let row = 0; row < rows; row++) {
                     for (let col = 0; col < cardsPerRow; col++) {
@@ -1245,7 +1206,7 @@
                         drawRoundedRect(ctx, imgX, imgY, imgWidth, imgHeight, 12);
                         ctx.fill();
                         
-                        // 绘制商品图片（从缓存或已加载的图片中获取）
+                        // 绘制商品图片
                         const img = imageMap.get(cardIndex);
                         if (img) {
                             ctx.save();
@@ -1295,19 +1256,15 @@
                             const progress = (cardIndex / cart.length) * 100;
                             progressFill.style.width = `${progress}%`;
                             
-                            // 使用requestIdleCallback避免阻塞UI
+                            // 避免阻塞UI
                             await new Promise(resolve => {
-                                if (typeof requestIdleCallback !== 'undefined') {
-                                    requestIdleCallback(() => resolve());
-                                } else {
-                                    setTimeout(resolve, 0);
-                                }
+                                setTimeout(resolve, 0);
                             });
                         }
                     }
                 }
                 
-                // 更新全局画布引用
+                // 存储当前画布
                 currentCanvas = canvas;
                 
                 // 显示预览
@@ -1316,6 +1273,10 @@
                 const previewModal = document.getElementById('previewModal');
                 
                 previewImage.src = dataURL;
+                
+                // 重置模态框状态
+                previewModal.style.display = 'flex';
+                previewModal.classList.remove('closing');
                 previewModal.classList.add('show');
                 
                 // 隐藏进度条
@@ -1356,7 +1317,7 @@
                 const timeout = setTimeout(() => {
                     console.warn(`图片加载超时: ${src}`);
                     resolve(null);
-                }, 3000); // 减少超时时间
+                }, 3000);
                 
                 img.onload = () => {
                     clearTimeout(timeout);
@@ -1418,7 +1379,7 @@
             }
 
             try {
-                // 方法1: 使用现代Clipboard API
+                // 使用现代Clipboard API
                 if (navigator.clipboard && navigator.clipboard.write) {
                     currentCanvas.toBlob(async (blob) => {
                         try {
@@ -1426,14 +1387,14 @@
                                 new ClipboardItem({ 'image/png': blob })
                             ]);
                             showMessage('✅ 图片已成功复制到剪贴板！');
-                            closePreview(); // 复制后关闭预览
+                            closePreview();
                         } catch (err) {
                             console.error('复制失败:', err);
                             fallbackCopyImage();
                         }
                     });
                 } else {
-                    // 方法2: 使用传统方法
+                    // 使用传统方法
                     fallbackCopyImage();
                 }
             } catch (err) {
@@ -1444,6 +1405,8 @@
 
         // 备用复制方法
         function fallbackCopyImage() {
+            if (!currentCanvas) return;
+            
             // 创建一个临时img元素
             const img = document.createElement('img');
             img.src = currentCanvas.toDataURL('image/png');
@@ -1465,7 +1428,7 @@
                 const successful = document.execCommand('copy');
                 if (successful) {
                     showMessage('✅ 图片已成功复制到剪贴板！');
-                    closePreview(); // 复制后关闭预览
+                    closePreview();
                 } else {
                     throw new Error('复制命令执行失败');
                 }
@@ -1479,7 +1442,7 @@
             document.body.removeChild(container);
         }
 
-        // 关闭预览 - 添加Q弹动画
+        // 关闭预览
         function closePreview() {
             const previewModal = document.getElementById('previewModal');
             const previewImage = document.getElementById('previewImage');
@@ -1493,9 +1456,9 @@
                 previewModal.classList.remove('closing');
                 previewModal.classList.remove('show');
                 
-                // 重置画布引用，确保下次导出使用新的画布
-                currentCanvas = null;
-            }, 400); // 动画持续时间
+                // 重置预览图片
+                previewImage.src = '';
+            }, 400);
         }
 
         // 显示消息
@@ -1595,7 +1558,7 @@
             // 清除按钮事件监听
             clearButton.addEventListener('click', clearSearch);
             
-            // 预览图片点击复制 - 使用事件委托
+            // 预览弹窗点击事件
             document.getElementById('previewModal').addEventListener('click', function(e) {
                 if (e.target.id === 'previewImage') {
                     // 点击的是图片，则复制图片
