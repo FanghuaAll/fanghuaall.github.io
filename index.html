@@ -97,7 +97,7 @@
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             color: #2c3e50;
-            min-width: 200px;
+            min-width: 250px;
             transition: all 0.3s ease;
         }
 
@@ -246,6 +246,7 @@
             object-fit: contain;
             transition: all 0.3s ease;
             opacity: 0;
+            cursor: pointer;
         }
 
         .product-image.loaded {
@@ -310,9 +311,9 @@
 
         .product-card h3 {
             margin: 0 0 12px 0;
-            font-size: 1.1em;
+            font-size: 1em;
             color: #2c3e50;
-            font-weight: 600;
+            font-weight: normal;
             text-align: center;
             line-height: 1.4;
             padding: 0 10px;
@@ -389,8 +390,8 @@
             position: fixed;
             right: 20px;
             bottom: 20px;
-            width: 350px;
-            max-height: 60vh;
+            width: 380px;
+            max-height: 85vh; /* 增加到85%视口高度 */
             display: none;
             flex-direction: column;
             z-index: 1001;
@@ -406,6 +407,11 @@
             transform: scale(0.9);
         }
 
+        /* 当购物车项目很多时的特殊样式 */
+        .cart-panel.full {
+            max-height: 90vh;
+        }
+
         .cart-content {
             position: relative;
             width: 100%;
@@ -413,7 +419,9 @@
             display: flex;
             flex-direction: column;
             z-index: 2;
-            padding: 25px 25px 0;
+            padding: 20px 20px 0;
+            overflow: hidden;
+            min-height: 200px; /* 确保最小高度 */
         }
 
         .cart-panel h3 {
@@ -421,33 +429,50 @@
             color: #2c3e50;
             font-size: 1.3em;
             z-index: 2;
+            flex-shrink: 0;
         }
 
         #cartItems {
             overflow-y: auto;
-            transition: max-height 0.4s ease-out, opacity 0.3s ease;
             opacity: 1;
-            flex: 1;
+            flex: 1 1 auto; /* 修改为自动增长和收缩 */
             margin-bottom: 15px;
             z-index: 2;
-            max-height: calc(60vh - 180px);
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            max-height: calc(85vh - 160px); /* 更新高度计算 */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(52, 152, 219, 0.5) rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            min-height: 100px; /* 添加最小高度 */
+        }
+
+        .cart-panel.full #cartItems {
+            max-height: calc(90vh - 160px);
         }
 
         #cartItems::-webkit-scrollbar {
-            display: none;
+            width: 6px;
+        }
+
+        #cartItems::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        #cartItems::-webkit-scrollbar-thumb {
+            background: rgba(52, 152, 219, 0.5);
+            border-radius: 3px;
         }
 
         #cartItems.updating {
             opacity: 0.6;
-            transition: max-height 0.4s ease-out, opacity 0.2s ease;
+            transition: opacity 0.2s ease;
         }
 
         .cart-buttons {
             display: flex;
             gap: 12px;
-            padding: 15px 25px;
+            padding: 15px 20px;
             flex-shrink: 0;
             z-index: 2;
             flex-wrap: wrap;
@@ -469,36 +494,36 @@
         }
 
         .clear-btn {
-            background: rgba(255, 179, 186, 0.7);
+            background: rgba(255, 179, 186, 0.5);
             color: #2c3e50;
             flex: 1;
         }
 
         .clear-btn:hover {
-            background: rgba(255, 154, 162, 0.8);
+            background: rgba(255, 154, 162, 0.7);
             transform: scale(1.05);
         }
 
         .copy-btn {
-            background: rgba(179, 224, 204, 0.7);
+            background: rgba(179, 224, 204, 0.5);
             color: #2c3e50;
             flex: 1;
         }
 
         .copy-btn:hover {
-            background: rgba(155, 212, 188, 0.8);
+            background: rgba(155, 212, 188, 0.7);
             transform: scale(1.05);
         }
 
         .export-btn {
-            background: rgba(179, 186, 224, 0.7);
+            background: rgba(179, 186, 224, 0.5);
             color: #2c3e50;
             width: 100%;
             margin-top: 8px;
         }
 
         .export-btn:hover {
-            background: rgba(155, 162, 212, 0.8);
+            background: rgba(155, 162, 212, 0.7);
             transform: scale(1.05);
         }
 
@@ -583,38 +608,156 @@
             opacity: 1;
         }
 
+        /* 水平布局的购物车项 */
         .cart-item {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(44, 62, 80, 0.1);
+            align-items: flex-start;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             transition: all 0.3s ease;
+            min-height: 70px; /* 确保最小高度 */
+            max-height: 90px; /* 添加最大高度限制 */
+            flex-shrink: 0; /* 防止被压缩 */
         }
 
-        .cart-item img {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
-            border-radius: 8px;
+        .cart-item:hover {
             background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .cart-item button {
-            padding: 8px 12px;
-            font-size: 14px;
-            background: rgba(255, 99, 71, 0.2);
+        .cart-item-image-container {
+            position: relative;
+            flex-shrink: 0;
+            margin-right: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            object-fit: contain;
+        }
+
+        .cart-item-size-badge {
+            margin-top: -8px;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .cart-item-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+        }
+
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .cart-item-name {
+            color: #2c3e50;
+            font-size: 0.95em;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            flex: 1;
+            padding-right: 8px;
+        }
+
+        .cart-item-remove-btn {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 99, 71, 0.15);
             border: 1px solid rgba(255, 99, 71, 0.3);
-            border-radius: 6px;
             color: #ff6347;
             cursor: pointer;
             transition: all 0.3s ease;
-            transform: scale(1);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
         }
 
-        .cart-item button:hover {
-            background: rgba(255, 99, 71, 0.3);
-            transform: scale(1.05);
+        .cart-item-remove-btn:hover {
+            background: rgba(255, 99, 71, 0.25);
+            transform: scale(1.1);
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 20px;
+            padding: 4px 10px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .cart-item-quantity-number {
+            font-weight: 700;
+            color: #3498db;
+            font-size: 0.95em;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .cart-item-quantity-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.15);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            color: #3498db;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .cart-item-quantity-btn:hover {
+            background: rgba(52, 152, 219, 0.25);
+            transform: scale(1.1);
+        }
+
+        .cart-item-quantity-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .size-btn.soon {
@@ -746,6 +889,95 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+        
+        /* 图片复制动画 */
+        .product-image.copying {
+            animation: copySuccess 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        
+        @keyframes copySuccess {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(52, 152, 219, 0);
+            }
+            25% {
+                transform: scale(0.95);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0.3);
+            }
+            75% {
+                transform: scale(0.98);
+                box-shadow: 0 0 0 20px rgba(52, 152, 219, 0.1);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+        
+        /* 图片容器复制动画 */
+        .product-image-container.copying::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.4) 0%, rgba(52, 152, 219, 0) 70%);
+            border-radius: 12px;
+            transform: translate(-50%, -50%) scale(0);
+            animation: copyRipple 0.8s ease-out forwards;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        @keyframes copyRipple {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* 复制成功提示 */
+        .copy-success-tooltip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            z-index: 10;
+            pointer-events: none;
+            white-space: nowrap;
+            animation: tooltipPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        @keyframes tooltipPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
 
         @media (max-width: 768px) {
             .product-grid {
@@ -779,6 +1011,15 @@
                 width: calc(100% - 40px);
                 right: 20px;
                 left: 20px;
+                max-height: 80vh;
+            }
+            
+            .cart-panel.full {
+                max-height: 85vh;
+            }
+            
+            .cart-panel.full #cartItems {
+                max-height: calc(85vh - 160px);
             }
             
             .filter-bar {
@@ -789,6 +1030,68 @@
                 max-width: 95%;
                 max-height: 95%;
             }
+            
+            .cart-item {
+                padding: 10px;
+                min-height: 65px;
+                max-height: 85px;
+            }
+            
+            .cart-item-image {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .cart-item-size-badge {
+                font-size: 0.75em;
+                padding: 2px 6px;
+            }
+            
+            .cart-item-name {
+                font-size: 0.9em;
+            }
+            
+            .cart-item-quantity {
+                padding: 3px 8px;
+            }
+            
+            .cart-item-quantity-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cart-item {
+                padding: 8px;
+                min-height: 60px;
+                max-height: 80px;
+            }
+            
+            .cart-item-image {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .cart-item-size-badge {
+                font-size: 0.7em;
+                padding: 2px 5px;
+            }
+            
+            .cart-item-name {
+                font-size: 0.85em;
+            }
+            
+            .cart-item-quantity-number {
+                font-size: 0.9em;
+            }
+            
+            .cart-item-remove-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -797,7 +1100,7 @@
         <h1 id="mainTitle">📦 柯南</h1>
         <div class="header-controls">
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="🔍 搜索...">
+                <input type="text" id="searchInput" placeholder="🔍 搜索商品名称或SKU...">
                 <button class="clear-search" id="clearSearch" style="display: none;">✕</button>
             </div>
             <div class="source-selector">
@@ -850,7 +1153,7 @@
             },
             'xiaoming': {
                 title: '🌟 小明',
-                link: 'edge://newtab/',
+                link: 'https://docs.qq.com/sheet/DZmtwTm5wTW9GRmhD?tab=nnfq46&nlc=1',
                 txtUrl: 'https://fanghuaall.github.io/xiaoming.txt'
             }
         };
@@ -860,10 +1163,19 @@
         let isExporting = false;
         let currentCanvas = null;
         
+        // 商品数据存储，包含SKU信息
+        let productsData = [];
+        
         // 图片缓存 - 加速图片加载
         const imageCache = new Map();
         
-        // 从TXT文件获取商品数据
+        // 购物车数据结构改为使用Map来合并相同商品，按数据源分开存储
+        let cartMap = new Map(); // 当前数据源的购物车
+        
+        // 存储所有数据源的购物车数据
+        const allCartData = new Map(); // key: 数据源名称, value: cartMap
+
+        // 从TXT文件获取商品数据 - 修复图片路径问题
         async function loadProducts(source) {
             showMessage('🔄 正在加载商品数据...');
             
@@ -885,9 +1197,70 @@
                     .map(line => line.trim())
                     .filter(line => line.length > 0 && !line.startsWith('#'));
                 
-                if (lines.length > 0) {
+                // 处理每一行数据，解析SKU但不影响图片路径
+                productsData = lines.map(line => {
+                    // 格式可能是：SKU_商品名称_商品类型_尺码
+                    // 例如：952701_满印毛衣_毛衣_S.M.L.XL
+                    // 或者没有SKU：满印毛衣_毛衣_S.M.L.XL
+                    
+                    const parts = line.split('_');
+                    let sku = null;
+                    let name = '';
+                    let type = '';
+                    let sizes = '';
+                    
+                    if (parts.length >= 3) {
+                        // 检查第一部分是否是SKU（数字）
+                        if (/^\d+$/.test(parts[0])) {
+                            // 第一部分是SKU
+                            sku = parts[0];
+                            name = parts[1] || '';
+                            type = parts[2] || '';
+                            sizes = parts[3] || '';
+                        } else {
+                            // 没有SKU
+                            sku = null;
+                            name = parts[0] || '';
+                            type = parts[1] || '';
+                            sizes = parts[2] || '';
+                        }
+                    } else {
+                        // 格式不正确的行，返回默认值
+                        name = line;
+                        type = '其他';
+                        sizes = '';
+                    }
+                    
+                    // 处理尺码信息
+                    let sizeArray;
+                    if (!sizes || sizes.trim() === '') {
+                        sizeArray = ['即将上架'];
+                    } else {
+                        sizeArray = sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'];
+                    }
+                    
+                    // 图片路径修复：使用商品名称作为图片文件名，而不是包含SKU的名称
+                    // 首先尝试使用商品名称查找图片
+                    const imageName = name;
+                    const imageUrl = `https://fanghuaall.github.io/img/${encodeURIComponent(imageName)}.jpg`;
+                    
+                    return {
+                        sku: sku,
+                        name: name,
+                        type: type,
+                        sizes: sizeArray,
+                        image: imageUrl,
+                        fileName: line, // 原始文件名
+                        searchableText: (sku ? sku + ' ' : '') + name // 用于搜索的文本
+                    };
+                });
+                
+                // 保留原始sampleImages用于兼容性
+                sampleImages = productsData.map(p => p.fileName);
+                
+                if (productsData.length > 0) {
                     showMessage('✅ 数据加载成功');
-                    return lines;
+                    return productsData;
                 } else {
                     throw new Error('TXT文件为空或格式不正确');
                 }
@@ -898,31 +1271,9 @@
             }
         }
 
-        // 解析文件名 - 修改此函数来处理没有尺码信息的情况
-        function parseFileName(fileName) {
-            const [name, type, sizes] = fileName.split('_');
-            
-            // 检查是否有尺码信息
-            let sizeArray;
-            if (!sizes || sizes.trim() === '') {
-                // 如果没有尺码信息，设置为"即将上架"
-                sizeArray = ['即将上架'];
-            } else {
-                // 有尺码信息，正常解析
-                sizeArray = sizes ? sizes.split('.').map(s => s.replace(/-.*/, '')) : ['S', 'M', 'L'];
-            }
-            
-            return { 
-                name, 
-                type,
-                sizes: sizeArray,
-                image: 'https://fanghuaall.github.io/img/' + name + '.jpg'
-            };
-        }
-
         // 创建筛选按钮
         function createFilterButtons() {
-            const types = [...new Set(sampleImages.map(f => parseFileName(f).type))];
+            const types = [...new Set(productsData.map(p => p.type))];
             const filterBar = document.getElementById('filterBar');
             filterBar.innerHTML = '<button class="filter-btn active" data-type="all">全部</button>';
             types.forEach(type => {
@@ -934,14 +1285,25 @@
             });
         }
 
-        // 筛选产品
+        // 筛选产品 - 改进版，支持SKU搜索
         function filterProducts(typeFilter) {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             document.querySelectorAll('.product-card').forEach(card => {
                 const cardType = card.dataset.type;
                 const name = card.querySelector('h3').textContent.toLowerCase();
-                card.style.display = (typeFilter === 'all' || cardType === typeFilter) && 
-                                   name.includes(searchTerm) ? 'flex' : 'none';
+                const cardSku = card.dataset.sku || '';
+                
+                // 类型筛选
+                const typeMatch = typeFilter === 'all' || cardType === typeFilter;
+                
+                // 搜索筛选：匹配商品名称或SKU
+                let searchMatch = true;
+                if (searchTerm) {
+                    searchMatch = name.includes(searchTerm) || 
+                                 cardSku.includes(searchTerm);
+                }
+                
+                card.style.display = typeMatch && searchMatch ? 'flex' : 'none';
             });
         }
 
@@ -974,6 +1336,12 @@
                     imgElement.src = cachedImg.src;
                     imgElement.classList.add('loaded');
                     skeleton.style.display = 'none';
+                    
+                    // 添加图片点击事件监听
+                    imgElement.addEventListener('click', function(e) {
+                        handleImageClick(e, cachedImg, productName);
+                    });
+                    
                     resolve(true);
                     return;
                 }
@@ -1000,14 +1368,47 @@
                     imgElement.classList.add('loaded');
                     skeleton.style.display = 'none';
                     
+                    // 添加图片点击事件监听
+                    imgElement.addEventListener('click', function(e) {
+                        handleImageClick(e, img, productName);
+                    });
+                    
                     resolve(true);
                 };
                 
                 img.onerror = () => {
                     loaded = true;
                     clearTimeout(timeout);
-                    handleImageError();
-                    resolve(false);
+                    
+                    // 如果图片加载失败，尝试其他可能的图片路径
+                    const productNameOnly = productName.replace(/\d+_/, ''); // 移除可能的SKU前缀
+                    const alternativeUrl = `https://fanghuaall.github.io/img/${encodeURIComponent(productNameOnly)}.jpg`;
+                    
+                    if (src !== alternativeUrl) {
+                        // 尝试备用URL
+                        img.src = alternativeUrl;
+                        img.onload = () => {
+                            loaded = true;
+                            imageCache.set(alternativeUrl, img);
+                            imgElement.src = alternativeUrl;
+                            imgElement.classList.add('loaded');
+                            skeleton.style.display = 'none';
+                            
+                            // 添加图片点击事件监听
+                            imgElement.addEventListener('click', function(e) {
+                                handleImageClick(e, img, productName);
+                            });
+                            
+                            resolve(true);
+                        };
+                        img.onerror = () => {
+                            handleImageError();
+                            resolve(false);
+                        };
+                    } else {
+                        handleImageError();
+                        resolve(false);
+                    }
                 };
                 
                 function handleImageError() {
@@ -1023,20 +1424,131 @@
                 img.src = url;
             });
         }
+        
+        // 处理图片点击事件 - 复制图片到剪贴板
+        async function handleImageClick(event, img, productName) {
+            const imgElement = event.target;
+            const container = imgElement.parentElement;
+            
+            try {
+                // 创建canvas来复制图片
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth || img.width || 300;
+                canvas.height = img.naturalHeight || img.height || 300;
+                
+                const ctx = canvas.getContext('2d');
+                
+                // 绘制白色背景
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制图片
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // 复制图片到剪贴板
+                canvas.toBlob(async (blob) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.write) {
+                            await navigator.clipboard.write([
+                                new ClipboardItem({ 'image/png': blob })
+                            ]);
+                            
+                            // 添加视觉反馈
+                            imgElement.classList.add('copying');
+                            container.classList.add('copying');
+                            
+                            // 创建成功提示
+                            const tooltip = document.createElement('div');
+                            tooltip.className = 'copy-success-tooltip';
+                            tooltip.textContent = '✅ 图片已复制';
+                            container.appendChild(tooltip);
+                            
+                            // 清理动画和提示
+                            setTimeout(() => {
+                                imgElement.classList.remove('copying');
+                                container.classList.remove('copying');
+                                tooltip.remove();
+                            }, 600);
+                        } else {
+                            throw new Error('Clipboard API not supported');
+                        }
+                    } catch (err) {
+                        console.error('复制失败:', err);
+                        fallbackCopyImage(canvas, productName, imgElement, container);
+                    }
+                }, 'image/png');
+                
+            } catch (error) {
+                console.error('创建canvas失败:', error);
+                showMessage('❌ 复制失败，请重试');
+            }
+        }
+        
+        // 备用复制方法
+        function fallbackCopyImage(canvas, productName, imgElement, container) {
+            // 创建临时img元素
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+            
+            // 创建一个临时div来包含图片
+            const tempContainer = document.createElement('div');
+            tempContainer.appendChild(img);
+            document.body.appendChild(tempContainer);
+            
+            // 选中图片
+            const range = document.createRange();
+            range.selectNode(img);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            try {
+                // 尝试复制
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    // 添加视觉反馈
+                    imgElement.classList.add('copying');
+                    container.classList.add('copying');
+                    
+                    // 创建成功提示
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'copy-success-tooltip';
+                    tooltip.textContent = '✅ 图片已复制';
+                    container.appendChild(tooltip);
+                    
+                    showMessage(`📋 已复制图片: ${productName}`);
+                    
+                    // 清理动画和提示
+                    setTimeout(() => {
+                        imgElement.classList.remove('copying');
+                        container.classList.remove('copying');
+                        tooltip.remove();
+                    }, 600);
+                } else {
+                    throw new Error('复制命令执行失败');
+                }
+            } catch (err) {
+                console.error('备用复制方法失败:', err);
+                showMessage('❌ 复制失败，请右键图片选择"复制图片"');
+            } finally {
+                // 清理
+                selection.removeAllRanges();
+                document.body.removeChild(tempContainer);
+            }
+        }
 
-        // 渲染产品 - 修改此函数来处理没有尺码信息的情况
+        // 渲染产品 - 移除SKU显示，但保留SKU数据用于搜索
         function renderProducts() {
             const grid = document.getElementById('productGrid');
             
-            if (sampleImages.length === 0) {
+            if (productsData.length === 0) {
                 grid.innerHTML = '<div class="loading"><div class="spinner"></div><span>暂无商品数据</span></div>';
                 return;
             }
             
-            grid.innerHTML = sampleImages.map(fileName => {
-                const product = parseFileName(fileName);
+            grid.innerHTML = productsData.map(product => {
                 return `
-                    <div class="product-card" data-type="${product.type}">
+                    <div class="product-card" data-type="${product.type}" data-sku="${product.sku || ''}">
                         <div class="glass-effect"></div>
                         <div class="glass-content">
                             <div class="product-image-container">
@@ -1044,7 +1556,8 @@
                                      src="" 
                                      alt="${product.name}"
                                      data-src="${product.image}"
-                                     data-name="${product.name}">
+                                     data-name="${product.name}"
+                                     title="点击复制图片">
                                 <div class="image-skeleton"></div>
                                 <div class="image-error" style="display: none;">
                                     <i>📷</i>
@@ -1058,7 +1571,7 @@
                                     return `
                                         <button class="size-btn ${status.class}" 
                                             ${status.disabled ? 'disabled' : ''}
-                                            ${status.disabled ? '' : `onclick="addToCartWithAnimation(this, '${product.name}', '${size}', '${product.image}')"`}>
+                                            ${status.disabled ? '' : `onclick="addToCartWithAnimation(this, '${product.name.replace(/'/g, "\\'")}', '${size.replace(/'/g, "\\'")}', '${product.image.replace(/'/g, "\\'")}', '${(product.sku || '').replace(/'/g, "\\'")}')"`}>
                                             ${size.replace(/-(即将上架|下架)/, '')}
                                         </button>
                                     `;
@@ -1121,7 +1634,7 @@
             });
         }
         
-        // 获取尺码状态 - 修改此函数来处理"即将上架"状态
+        // 获取尺码状态
         function getSizeStatus(size) {
             if (size === '即将上架') {
                 return { class: 'soon', disabled: true };
@@ -1135,7 +1648,96 @@
             return { class: '', disabled: false };
         }
 
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // 保存当前数据源的购物车数据
+        function saveCurrentCartToStorage() {
+            const cartArray = [];
+            cartMap.forEach((item, key) => {
+                for (let i = 0; i < item.quantity; i++) {
+                    cartArray.push({
+                        name: item.name,
+                        size: item.size,
+                        image: item.image,
+                        sku: item.sku
+                    });
+                }
+            });
+            
+            // 存储到全局数据中
+            allCartData.set(currentDataSource, cartArray);
+            
+            // 保存到localStorage，按数据源分开存储
+            localStorage.setItem(`cart_${currentDataSource}`, JSON.stringify(cartArray));
+        }
+
+        // 从localStorage加载当前数据源的购物车数据
+        function loadCartFromStorage() {
+            // 首先从全局数据中加载
+            if (allCartData.has(currentDataSource)) {
+                const savedCart = allCartData.get(currentDataSource);
+                cartMap.clear();
+                
+                savedCart.forEach(item => {
+                    const key = `${item.name}_${item.size}`;
+                    if (cartMap.has(key)) {
+                        cartMap.get(key).quantity += 1;
+                    } else {
+                        cartMap.set(key, { 
+                            name: item.name, 
+                            size: item.size, 
+                            image: item.image,
+                            sku: item.sku || null,
+                            quantity: 1 
+                        });
+                    }
+                });
+            } else {
+                // 从localStorage加载
+                const savedCart = JSON.parse(localStorage.getItem(`cart_${currentDataSource}`)) || [];
+                cartMap.clear();
+                
+                savedCart.forEach(item => {
+                    const key = `${item.name}_${item.size}`;
+                    if (cartMap.has(key)) {
+                        cartMap.get(key).quantity += 1;
+                    } else {
+                        cartMap.set(key, { 
+                            name: item.name, 
+                            size: item.size, 
+                            image: item.image,
+                            sku: item.sku || null,
+                            quantity: 1 
+                        });
+                    }
+                });
+                
+                // 存储到全局数据中
+                allCartData.set(currentDataSource, savedCart);
+            }
+        }
+
+        // 切换数据源时保存和加载购物车
+        function switchCartDataSource(newSource) {
+            // 保存当前数据源的购物车
+            saveCurrentCartToStorage();
+            
+            // 切换到新的数据源
+            currentDataSource = newSource;
+            
+            // 加载新数据源的购物车
+            loadCartFromStorage();
+            
+            // 更新购物车显示
+            updateCart();
+        }
+
+        // 计算购物车总商品数量
+        function getCartTotalCount() {
+            let total = 0;
+            cartMap.forEach(item => {
+                total += item.quantity;
+            });
+            return total;
+        }
 
         // 优化：使用更流畅的动画效果
         function smoothHeightTransition(callback) {
@@ -1153,13 +1755,14 @@
                     // 恢复滚动和高度
                     setTimeout(() => {
                         cartItems.classList.remove('updating');
+                        adjustCartPanelHeight();
                     }, 300);
                 });
             });
         }
 
-        // 添加购物车并触发动画
-        function addToCartWithAnimation(button, name, size, image) {
+        // 添加购物车并触发动画 - 添加SKU参数
+        function addToCartWithAnimation(button, name, size, image, sku) {
             if (size.includes('即将上架') || size.includes('下架')) {
                 return;
             }
@@ -1172,8 +1775,21 @@
                 button.classList.remove('ripple');
             }, 800);
             
-            // 添加购物车项
-            cart.push({ name, size, image });
+            // 生成购物车项的key
+            const key = `${name}_${size}`;
+            
+            // 更新购物车Map
+            if (cartMap.has(key)) {
+                cartMap.get(key).quantity += 1;
+            } else {
+                cartMap.set(key, { 
+                    name, 
+                    size, 
+                    image,
+                    sku: sku || null,
+                    quantity: 1 
+                });
+            }
             
             smoothHeightTransition(() => {
                 updateCart();
@@ -1195,48 +1811,123 @@
             });
         }
 
-        // 更新购物车
+        // 更新购物车显示 - 水平布局，不显示SKU
         function updateCart() {
             const cartItems = document.getElementById('cartItems');
-            const prevScrollTop = cartItems.scrollTop;
+            const cartPanel = document.querySelector('.cart-panel');
             
-            cartItems.innerHTML = cart.map((item, index) => `
-                <div class="cart-item" style="animation: fadeIn 0.3s ease-out;">
-                    <img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+JHtpdGVtLm5hbWV9PC90ZXh0Pjwvc3ZnPg=='">
-                    <div class="item-info">
-                        <div style="font-weight:500;color:#2c3e50;">${item.name}</div>
-                        <div style="color:rgba(44,62,80,0.7);font-size:0.9em;">尺码：${item.size}</div>
-                    </div>
-                    <button onclick="removeFromCart(${index})">删除</button>
-                </div>
-            `).join('');
-            
-            // 恢复滚动位置
-            cartItems.scrollTop = prevScrollTop;
-            document.getElementById('cartCount').textContent = cart.length;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            
-            // 如果购物车为空，使用动画隐藏面板
-            if (cart.length === 0) {
-                const cartPanel = document.querySelector('.cart-panel');
+            if (cartMap.size === 0) {
+                cartItems.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(44,62,80,0.6);font-size:0.95em;">🛒 购物车为空<br><span style="font-size:0.85em;opacity:0.7;">点击商品尺码按钮添加商品</span></div>';
+                
+                // 隐藏面板
                 cartPanel.classList.add('hiding');
                 setTimeout(() => {
                     cartPanel.style.display = 'none';
                     cartPanel.classList.remove('hiding');
                 }, 300);
             } else {
-                document.querySelector('.cart-panel').style.display = 'flex';
+                cartItems.innerHTML = Array.from(cartMap.entries()).map(([key, item]) => `
+                    <div class="cart-item">
+                        <div class="cart-item-image-container">
+                            <img class="cart-item-image" 
+                                 src="${item.image}" 
+                                 alt="${item.name}"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjIpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0icmdiYSg0NCwgNjIsIDgwLCAwLjUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+${encodeURIComponent(item.name.substring(0, 6))}</textPjwvc3ZnPg=='">
+                            <div class="cart-item-size-badge">${item.size}</div>
+                        </div>
+                        <div class="cart-item-content">
+                            <div class="cart-item-header">
+                                <div class="cart-item-name" title="${item.name}">
+                                    ${item.name}
+                                </div>
+                                <button class="cart-item-remove-btn" onclick="removeFromCart('${key}')">✕</button>
+                            </div>
+                            <div class="cart-item-controls">
+                                <div class="cart-item-quantity">
+                                    <button class="cart-item-quantity-btn" onclick="changeQuantity('${key}', -1)" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
+                                    <span class="cart-item-quantity-number">${item.quantity}</span>
+                                    <button class="cart-item-quantity-btn" onclick="changeQuantity('${key}', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // 显示面板
+                cartPanel.style.display = 'flex';
+            }
+            
+            document.getElementById('cartCount').textContent = getCartTotalCount();
+            
+            // 保存购物车数据
+            saveCurrentCartToStorage();
+            
+            // 使用requestAnimationFrame确保DOM更新完成后再计算高度
+            setTimeout(() => {
+                adjustCartPanelHeight();
+            }, 50);
+        }
+
+        // 调整购物车面板高度
+        function adjustCartPanelHeight() {
+            const cartItems = document.getElementById('cartItems');
+            const cartPanel = document.querySelector('.cart-panel');
+            
+            if (!cartPanel || cartMap.size === 0) return;
+            
+            // 根据商品数量调整面板高度
+            const itemHeight = 90; // 每个购物车项的大致高度
+            const minHeight = 200; // 最小高度
+            const maxHeight = window.innerHeight * 0.85 - 160; // 最大高度（留出底部按钮和边距）
+            
+            const itemCount = cartMap.size;
+            
+            // 当商品数量超过8个时，使用full类增加最大高度
+            if (itemCount > 8) {
+                cartPanel.classList.add('full');
+            } else {
+                cartPanel.classList.remove('full');
+            }
+            
+            // 设置购物车项目区域的高度
+            const calculatedHeight = Math.min(maxHeight, itemCount * itemHeight + 30);
+            cartItems.style.height = `${Math.max(minHeight, calculatedHeight)}px`;
+            
+            // 确保滚动正常工作
+            if (cartItems.scrollHeight > calculatedHeight) {
+                cartItems.style.overflowY = 'auto';
+            } else {
+                cartItems.style.overflowY = 'hidden';
             }
         }
 
+        // 窗口大小变化时调整高度
+        window.addEventListener('resize', adjustCartPanelHeight);
+
+        // 修改商品数量
+        function changeQuantity(key, delta) {
+            const item = cartMap.get(key);
+            if (!item) return;
+            
+            item.quantity += delta;
+            
+            if (item.quantity <= 0) {
+                cartMap.delete(key);
+            }
+            
+            smoothHeightTransition(() => {
+                updateCart();
+            });
+        }
+
         // 从购物车移除商品
-        function removeFromCart(index) {
-            const cartItem = document.querySelectorAll('.cart-item')[index];
+        function removeFromCart(key) {
+            const cartItem = document.querySelector(`.cart-item button[onclick="removeFromCart('${key}')"]`).closest('.cart-item');
             cartItem.style.animation = 'fadeOut 0.3s ease-out forwards';
             
             setTimeout(() => {
                 smoothHeightTransition(() => {
-                    cart.splice(index, 1);
+                    cartMap.delete(key);
                     updateCart();
                 });
             }, 300);
@@ -1247,14 +1938,19 @@
             const cartPanel = document.querySelector('.cart-panel');
             cartPanel.classList.add('hiding');
             setTimeout(() => {
-                cart = [];
+                cartMap.clear();
                 updateCart();
             }, 300);
         }
 
-        // 复制购物车
+        // 复制购物车内容（合并后的） - 不包含SKU
         function copyCart() {
-            const text = cart.map(item => `${item.name} - ${item.size}`).join('\n');
+            const items = [];
+            cartMap.forEach(item => {
+                items.push(`${item.name} - ${item.size}${item.quantity > 1 ? ` × ${item.quantity}` : ''}`);
+            });
+            
+            const text = items.join('\n');
             navigator.clipboard.writeText(text).then(() => {
                 showMessage('📋 已复制到剪贴板');
             });
@@ -1285,14 +1981,14 @@
             }
         }
 
-        // 导出为图片功能
+        // 导出为图片功能（支持多件商品合并显示）
         async function exportToImage() {
             if (isExporting) {
                 showMessage('🔄 正在生成图片，请稍候...');
                 return;
             }
             
-            if (cart.length === 0) {
+            if (cartMap.size === 0) {
                 showMessage('❌ 购物车为空，无法导出');
                 return;
             }
@@ -1317,8 +2013,8 @@
                 const padding = 25;
                 
                 // 计算布局
-                const cardsPerRow = calculateOptimalColumns(cart.length);
-                const rows = Math.ceil(cart.length / cardsPerRow);
+                const cardsPerRow = calculateOptimalColumns(cartMap.size);
+                const rows = Math.ceil(cartMap.size / cardsPerRow);
                 
                 canvas.width = cardsPerRow * cardWidth + (cardsPerRow + 1) * padding;
                 canvas.height = rows * cardHeight + (rows + 1) * padding;
@@ -1335,8 +2031,9 @@
                 const imageMap = new Map();
                 
                 // 首先尝试从缓存加载图片
-                for (let i = 0; i < cart.length; i++) {
-                    const item = cart[i];
+                const cartItems = Array.from(cartMap.values());
+                for (let i = 0; i < cartItems.length; i++) {
+                    const item = cartItems[i];
                     if (imageCache.has(item.image)) {
                         imageMap.set(i, imageCache.get(item.image));
                     } else {
@@ -1361,16 +2058,16 @@
                 // 绘制所有卡片
                 let cardIndex = 0;
                 let loadedImagesCount = 0;
-                const totalImages = cart.length;
+                const totalImages = cartItems.length;
                 
                 // 分块绘制 - 提升绘制性能
-                const chunkSize = Math.max(1, Math.floor(cart.length / 10));
+                const chunkSize = Math.max(1, Math.floor(cartItems.length / 10));
                 
                 for (let row = 0; row < rows; row++) {
                     for (let col = 0; col < cardsPerRow; col++) {
-                        if (cardIndex >= cart.length) break;
+                        if (cardIndex >= cartItems.length) break;
                         
-                        const item = cart[cardIndex];
+                        const item = cartItems[cardIndex];
                         const x = col * cardWidth + (col + 1) * padding;
                         const y = row * cardHeight + (row + 1) * padding;
                         
@@ -1427,7 +2124,7 @@
                         
                         ctx.fillText(displayName, x + cardWidth/2, y + 240);
                         
-                        // 尺码按钮
+                        // 尺码信息（显示合并后的数量）
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                         drawRoundedRect(ctx, x + 25, y + 260, cardWidth - 50, 35, 10);
                         ctx.fill();
@@ -1435,13 +2132,14 @@
                         
                         ctx.fillStyle = '#2c3e50';
                         ctx.font = 'bold 18px Arial';
-                        ctx.fillText(item.size, x + cardWidth/2, y + 283);
+                        const sizeText = item.quantity > 1 ? `${item.size} × ${item.quantity}` : item.size;
+                        ctx.fillText(sizeText, x + cardWidth/2, y + 283);
                         
                         cardIndex++;
                         
                         // 更新进度条
-                        if (cardIndex % chunkSize === 0 || cardIndex === cart.length) {
-                            const progress = (cardIndex / cart.length) * 100;
+                        if (cardIndex % chunkSize === 0 || cardIndex === cartItems.length) {
+                            const progress = (cardIndex / cartItems.length) * 100;
                             progressFill.style.width = `${progress}%`;
                             
                             // 避免阻塞UI
@@ -1660,7 +2358,7 @@
             }, 1500);
         }
 
-        // 处理搜索
+        // 处理搜索 - 改进版支持SKU搜索
         function handleSearch() {
             const allButton = document.querySelector('.filter-btn[data-type="all"]');
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -1671,6 +2369,12 @@
             const searchInput = document.getElementById('searchInput');
             const clearButton = document.getElementById('clearSearch');
             clearButton.style.display = searchInput.value ? 'flex' : 'none';
+            
+            // 如果搜索的是纯数字，可能是在搜索SKU
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm && /^\d+$/.test(searchTerm)) {
+                showMessage(`🔍 正在搜索SKU: ${searchTerm}`);
+            }
         }
 
         // 清除搜索框内容
@@ -1689,10 +2393,10 @@
             });
             document.querySelector(`.source-btn[onclick="changeDataSource('${source}')"]`).classList.add('active');
             
-            // 更新当前数据源
-            currentDataSource = source;
+            // 切换购物车数据源
+            switchCartDataSource(source);
             
-            // 刷新数据
+            // 刷新商品数据
             initApp().catch(() => {
                 showMessage('⚠️ 数据加载失败');
             });
@@ -1706,14 +2410,12 @@
                 grid.innerHTML = '<div class="loading"><div class="spinner"></div><span>正在加载商品数据...</span></div>';
                 
                 // 从网络加载数据
-                sampleImages = await loadProducts(currentDataSource);
+                await loadProducts(currentDataSource);
                 
                 // 渲染界面
                 createFilterButtons();
                 renderProducts();
                 initFilterButtons(); 
-                cart = [];  
-                updateCart();
                 
                 // 更新标题和链接
                 const config = dataSources[currentDataSource];
@@ -1734,6 +2436,14 @@
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
+            // 初始化所有数据源的购物车存储
+            allCartData.set('kenan', []);
+            allCartData.set('xiaoming', []);
+            
+            // 初始化当前数据源的购物车
+            loadCartFromStorage();
+            updateCart();
+            
             initApp();
             
             // 搜索框事件监听
